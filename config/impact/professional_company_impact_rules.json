@@ -1,0 +1,133 @@
+{
+  "version": "1.0",
+  "basis": "历史业务周报要求第二段按受影响专业公司和具体业务场景展开；用于 title-only 或正文稀薄时补足事实卡的专业公司映射。",
+  "rules": [
+    {
+      "rule_id": "technology_equipment_credit",
+      "description": "科技创新和设备更新贷款投放",
+      "keywords": ["科技创新", "技术改造贷款", "设备更新", "再贷款", "设备更新贷款"],
+      "topic_hints": ["cross_border_finance", "macro_policy_and_planning"],
+      "scene_hints": ["bank_cross_border_credit_scene"],
+      "entities": ["平安银行对公业务", "平安租赁"],
+      "paragraph2_mode": "opportunity",
+      "importance": "major",
+      "importance_reason": "涉及科技创新和设备更新贷款投放，影响银行对公授信和租赁设备融资机会。",
+      "impact_focus": ["科技企业授信、设备更新贷款和融资租赁投放"],
+      "actions": [
+        "可关注科技企业授信、设备更新贷款和融资租赁投放机会。",
+        "应评估设备更新贷款政策与对公授信准入、租赁项目投放口径的衔接。"
+      ]
+    },
+    {
+      "rule_id": "trust_property_registration",
+      "description": "股权信托财产登记试点",
+      "keywords": ["股权信托财产登记", "信托财产登记", "合伙企业财产份额", "信托登记"],
+      "topic_hints": ["internal_control_and_integrity"],
+      "scene_hints": ["group_control_penetration_scene"],
+      "entities": ["平安信托", "平安资本"],
+      "paragraph2_mode": "direct",
+      "importance": "major",
+      "importance_reason": "涉及信托财产登记范围和试点有效期，直接影响信托及股权投资项目登记和存续管理。",
+      "impact_focus": ["股权信托财产登记、合伙企业财产份额登记和存续管理"],
+      "actions": [
+        "应梳理股权信托财产登记和合伙企业财产份额登记适用项目清单。",
+        "应开展登记试点规则与存续项目管理流程的差距映射。"
+      ]
+    },
+    {
+      "rule_id": "data_export_negative_list",
+      "description": "数据出境负面清单",
+      "keywords": ["数据出境负面清单", "负面清单", "数据出境", "上海自贸试验区", "服务业扩大开放"],
+      "topic_hints": ["personal_information_and_data_governance", "insurance_product_governance"],
+      "scene_hints": ["customer_touchpoint_data_scene", "digital_marketing_and_platform_scene"],
+      "entities": ["平安寿险", "平安产险", "平安健康险", "平安养老险", "集团科技条线", "集团合规部"],
+      "paragraph2_mode": "scene_direct_related",
+      "importance": "major",
+      "importance_reason": "涉及金融行业数据出境清单和场景边界，直接影响保险、健康险及集团数据出境治理。",
+      "impact_focus": ["客户数据、再保险数据、健康服务数据和跨境数据出境链路"],
+      "actions": [
+        "应排查客户数据、再保险数据、健康服务数据和跨境数据出境链路。",
+        "应开展负面清单与现有数据出境评估、备案和安全管理机制的差距映射。"
+      ]
+    },
+    {
+      "rule_id": "industrial_data_elements",
+      "description": "工业场景数据要素应用",
+      "keywords": ["工业场景数据要素", "数据要素应用", "工业数据", "数据集", "数据治理"],
+      "topic_hints": ["personal_information_and_data_governance", "macro_policy_and_planning"],
+      "scene_hints": ["customer_touchpoint_data_scene"],
+      "entities": ["集团科技条线", "平安银行对公业务", "平安产险"],
+      "paragraph2_mode": "opportunity",
+      "importance": "major",
+      "importance_reason": "涉及工业数据要素应用，影响科技条线数据治理、对公客户数据合作和产险工业场景风控。",
+      "impact_focus": ["产业客户数据合作、工业风控模型和数据治理能力建设"],
+      "actions": [
+        "可关注产业客户数据合作、工业风控模型和数据治理能力建设机会。",
+        "应评估工业数据合作场景中的数据来源、授权和外部共享边界。"
+      ]
+    },
+    {
+      "rule_id": "model_data_resonance",
+      "description": "模数共振行动",
+      "keywords": ["模数共振", "模型", "智能体", "数据集", "行业模型"],
+      "topic_hints": ["ai_model_and_interaction_governance", "macro_policy_and_planning"],
+      "scene_hints": ["ai_interaction_scene", "customer_touchpoint_data_scene"],
+      "entities": ["集团科技条线", "平安银行", "平安产险", "平安医疗健康板块"],
+      "paragraph2_mode": "opportunity",
+      "importance": "major",
+      "importance_reason": "涉及行业模型、智能体和数据集应用，影响集团科技及业务场景模型建设。",
+      "impact_focus": ["行业模型、智能体和业务数据集应用"],
+      "actions": [
+        "可关注行业模型、智能体和业务数据集在金融风控、车险定价和健康服务中的应用机会。",
+        "应评估模型训练数据、业务数据集和智能体调用的合规边界。"
+      ]
+    },
+    {
+      "rule_id": "marine_law_time_effect",
+      "description": "海商法时间效力司法解释",
+      "keywords": ["海商法", "时间效力", "海事", "船舶", "海上运输"],
+      "topic_hints": ["internal_control_and_integrity"],
+      "scene_hints": ["customer_disclosure_scene"],
+      "entities": ["平安产险"],
+      "paragraph2_mode": "direct",
+      "importance": "major",
+      "importance_reason": "海商法时间效力规则可能影响航运、货运险等海事案件理赔和追偿适用口径。",
+      "impact_focus": ["船舶险、货运险海事理赔和追偿案件法律适用口径"],
+      "actions": [
+        "应梳理船舶险、货运险海事理赔和追偿案件的新旧法适用口径。",
+        "应复核存量海事争议案件和理赔追偿流程的法律适用边界。"
+      ]
+    },
+    {
+      "rule_id": "power_battery_recycling",
+      "description": "废旧动力电池回收利用专项行动",
+      "keywords": ["废旧动力电池", "动力电池回收", "联合执法专项行动", "新能源汽车", "回收利用"],
+      "topic_hints": ["internal_control_and_integrity", "macro_policy_and_planning"],
+      "scene_hints": ["group_control_penetration_scene"],
+      "entities": ["平安产险", "平安租赁"],
+      "paragraph2_mode": "scene_direct_related",
+      "importance": "major",
+      "importance_reason": "涉及新能源汽车动力电池回收和溯源责任，影响车险、残值处置和租赁资产管理。",
+      "impact_focus": ["新能源车险理赔残值处置、租赁资产退役电池管理和合作回收商准入"],
+      "actions": [
+        "应梳理新能源车险理赔残值处置、租赁资产退役电池管理和合作回收商准入要求。",
+        "应复核事故车电池处置、残值流转和合作回收商管理流程。"
+      ]
+    },
+    {
+      "rule_id": "social_assistance_health_pension",
+      "description": "社会救助法",
+      "keywords": ["社会救助法", "社会救助", "低保", "特困", "临时救助"],
+      "topic_hints": ["medical_service_collaboration", "macro_policy_and_planning"],
+      "scene_hints": ["medical_service_payment_scene"],
+      "entities": ["平安养老险", "平安健康险", "平安医疗健康板块"],
+      "paragraph2_mode": "opportunity",
+      "importance": "minor",
+      "importance_reason": "社会救助法不直接形成金融机构义务，但对养老、健康服务和普惠保障场景具有观察价值。",
+      "impact_focus": ["养老服务、健康服务和困难群体保障衔接"],
+      "actions": [
+        "可关注养老服务、健康服务和困难群体保障衔接机会。"
+      ]
+    }
+  ]
+}

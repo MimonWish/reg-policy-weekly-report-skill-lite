@@ -10,7 +10,9 @@ from src.extractor import (
     _extract_numbers_and_thresholds,
     _is_irrelevant_content,
     _normalize_text,
+    extract_fact_sheets,
 )
+from src.schemas import FetchedArticle, FetchedArticlesOutput, WeeklyPoliciesInput, WeeklyPolicyItem
 
 
 class TestIsIrrelevantContent:
@@ -116,3 +118,59 @@ class TestNormalizeText:
 
     def test_handles_none(self):
         assert _normalize_text("") == ""
+
+
+class TestProfessionalCompanyImpactRules:
+    def _extract_one(self, title: str, issuer: str = "测试机构"):
+        policy = WeeklyPolicyItem(
+            date="2026-04-29",
+            issuer=issuer,
+            title=title,
+            url="",
+            include=True,
+        )
+        fetched = FetchedArticlesOutput(
+            report_date="2026.05.03",
+            articles=[
+                FetchedArticle(
+                    policy_id="test001",
+                    issuer=issuer,
+                    title=title,
+                    title_display=f"{issuer}《{title}》",
+                    date="2026-04-29",
+                    url="",
+                    fetch_status="title_only",
+                    title_only_fallback=True,
+                )
+            ],
+        )
+        input_data = WeeklyPoliciesInput(
+            report_date="2026.05.03",
+            policies=[policy],
+        )
+        return extract_fact_sheets(fetched, input_data).fact_sheets[0]
+
+    def test_trust_registration_maps_to_trust_and_capital(self):
+        fs = self._extract_one("延长股权信托财产登记试点有效期并扩大适用范围", "北京金融监管局、北京市市场监管局")
+
+        assert "平安信托" in fs.allowed_paragraph2_entities
+        assert "平安资本" in fs.allowed_paragraph2_entities
+        assert fs.paragraph2_mode == "direct"
+        assert fs.importance == "major"
+        assert any("股权信托财产登记" in action for action in fs.allowed_paragraph2_actions)
+
+    def test_data_export_negative_list_maps_to_professional_companies(self):
+        fs = self._extract_one("上海自贸试验区、服务业扩大开放综合试点地区数据出境负面清单管理办法及负面清单", "上海市网信办、上海市数据局")
+
+        assert "平安寿险" in fs.allowed_paragraph2_entities
+        assert "平安产险" in fs.allowed_paragraph2_entities
+        assert "集团科技条线" in fs.allowed_paragraph2_entities
+        assert fs.paragraph2_mode == "scene_direct_related"
+        assert any("数据出境" in phrase for phrase in fs.impact_focus)
+
+    def test_marine_law_time_effect_maps_to_pnc_claims(self):
+        fs = self._extract_one("关于适用〈中华人民共和国海商法〉时间效力的若干规定", "最高人民法院")
+
+        assert fs.allowed_paragraph2_entities == ["平安产险"]
+        assert fs.paragraph2_mode == "direct"
+        assert any("海事理赔" in action for action in fs.allowed_paragraph2_actions)

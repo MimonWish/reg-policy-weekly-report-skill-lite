@@ -57,7 +57,7 @@ paragraph_style_rules:
     structure:
       - "受影响主体"
       - "可选业务落点短语"
-      - "最关键动作"
+      - "按主体分组的动作或影响程度"
     sentence_rules:
       min_sentences: 0
       max_sentences: 6
@@ -102,13 +102,20 @@ emphasis_rules:
   paragraph2:
     allow_emphasis: true
     emphasis_targets:
-      - "对平安XXX有直接影响"
-      - "最关键动作短语"
+      - "受影响平安主体、产品线、团队"
+      - "硬性要求或最关键动作短语"
       - "最短业务落点短语"
 
 highlight_rules:
   enabled: true
+  mode: "explicit_json_fields_first"
   color: "red"
+  red_bold_fields:
+    - "paragraph1_red_bold"
+    - "paragraph2_red_bold"
+  black_bold_fields:
+    - "paragraph1_black_bold"
+    - "paragraph2_black_bold"
   strict_mode: true
   title_highlight: false
   max_highlight_segments_per_item: 8
@@ -127,10 +134,10 @@ highlight_rules:
       - "整句全部高亮"
   paragraph2:
     allowed_targets:
-      - "对平安XXX有直接影响"
-      - "后续将改变XXX场景"
-      - "平安集团不直接适用"
-      - "应立即/应优先/应开展/应评估/应梳理等动作短语"
+      - "受影响平安主体、产品线、团队（黑色加粗）"
+      - "后续将改变XXX场景（红色加粗）"
+      - "平安集团不直接适用（黑色加粗或红色加粗，视语义强度）"
+      - "应立即/应优先/应开展/应评估/应梳理等硬性动作短语（红色加粗）"
       - "关键业务落点短语"
     forbidden_targets:
       - "整段高亮"
@@ -204,7 +211,7 @@ grouped_policy_style_rules:
     - "同一grouping_key只输出1条主卡片"
     - "标题优先使用主文件标题"
     - "配套实施公告并入paragraph1"
-    - "paragraph2只保留一套主体和一个主动作"
+    - "paragraph2只保留一套业务判断；如合并后的主文件直接影响多个平安主体，可按主体并列动作"
     - "不得生成两条几乎重复的卡片"
   preferred_expression:
     - "……及配套实施安排……"

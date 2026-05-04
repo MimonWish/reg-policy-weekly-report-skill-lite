@@ -21,6 +21,7 @@ from .generator import (
 from .learning import diff_draft_vs_final, parse_final_report, update_few_shots, update_forbidden_expansions
 from .renderer import render_docx
 from .schemas import (
+    FinalReportContent,
     LearningUpdateReport,
     NormalizedPoliciesOutput,
     PolicyCardDraftsOutput,
@@ -177,7 +178,7 @@ def generate(input_path: str, output_dir: str) -> None:
 @click.option("--input", "input_path", required=True, type=click.Path(exists=True), help="weekly_policies.json 路径")
 @click.option("--output-dir", "output_dir", default="./output", show_default=True, help="输出目录")
 def prepare(input_path: str, output_dir: str) -> None:
-    """Skill-as-instructions 模式 Stage A：准备事实卡和提示词，由会话 LLM 接管生成。
+    """[开发/回归用] 准备事实卡、few-shot 和审计提示词。
 
     本命令不调用任何 LLM API，仅做规则提取和数据汇总。
     产物：fact_sheets / retrieved_examples / generation_prompt.md
@@ -223,16 +224,15 @@ def prepare(input_path: str, output_dir: str) -> None:
     console.print()
     console.print("[bold green]Stage A 完成。[/bold green]")
     console.print()
-    console.print("[bold]下一步（Stage B）：[/bold]")
-    console.print(f"  1. 让会话 LLM 读取 [cyan]{prompt_path}[/cyan]")
-    console.print(f"  2. LLM 按提示词产出 JSON，写入 [cyan]{out / 'policy_card_drafts.json'}[/cyan]")
-    console.print(f"  3. 运行 [cyan]python -m src.main finalize --output-dir {output_dir}[/cyan]")
+    console.print("[bold]下一步（Stage B/C）：[/bold]")
+    console.print(f"  1. 由 Codex 按 SKILL.md 和 [cyan]{prompt_path}[/cyan] 审计上下文写出 final_report_content.json")
+    console.print(f"  2. 运行 [cyan]python -m src.main render --input {out / 'final_report_content.json'} --output-dir {output_dir}[/cyan]")
 
 
 @main.command()
 @click.option("--output-dir", "output_dir", default="./output", show_default=True, help="包含 policy_card_drafts.json 的目录")
 def finalize(output_dir: str) -> None:
-    """Skill-as-instructions 模式 Stage C：校验 + 渲染 docx。
+    """[旧流程/回归用] 校验 policy_card_drafts.json 并渲染 docx。
 
     需要 Stage B 由会话 LLM 写好 policy_card_drafts.json 之后再运行。
     """
@@ -273,6 +273,23 @@ def finalize(output_dir: str) -> None:
     console.print(f"[green]✓ docx → {docx_path}[/green]")
 
     _write_run_log(out, logger, drafts.report_date)
+
+
+@main.command()
+@click.option("--input", "input_path", required=True, type=click.Path(exists=True), help="final_report_content.json 路径")
+@click.option("--output-dir", "output_dir", default="", help="Word 输出目录；默认与 input 同目录")
+@click.option("--output", "output_path", default="", help="完整 Word 输出路径；优先于 output-dir")
+def render(input_path: str, output_dir: str, output_path: str) -> None:
+    """仅渲染 Word：读取 Codex 按 Skill instruction 写好的 final_report_content.json。"""
+    content_path = Path(input_path)
+    final_content = FinalReportContent.model_validate_json(content_path.read_text(encoding="utf-8"))
+    if output_path:
+        docx_path = Path(output_path)
+    else:
+        out = Path(output_dir) if output_dir else content_path.parent
+        docx_path = out / f"监管政策周报_{final_content.report_date}.docx"
+    render_docx(final_content, docx_path)
+    console.print(f"[green]✓ docx → {docx_path}[/green]")
 
 
 @main.command("parse-final")

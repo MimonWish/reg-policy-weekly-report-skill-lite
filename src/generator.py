@@ -192,10 +192,14 @@ def build_generation_prompt(
                 "title": "<政策标题>",
                 "url": "<官网原文 URL>",
                 "paragraph1": "<P1 政策摘要：机构 / 文号 / 状态 / 关键阈值 / 时间要求>",
-                "paragraph2": "<P2 平安影响（重点文件才有）：受影响主体 + 1 个关键动作>",
+                "paragraph2": "<P2 平安影响（重点文件才有）：受影响主体/产品线/团队 + 业务链路 + 动作或影响程度>",
                 "paragraph2_mode": "<direct | scene_direct_related | benchmark | opportunity | none>",
                 "importance": "<major | minor>",
                 "editor_notes": "<可选：留给人工编辑的备注>",
+                "paragraph1_red_bold": ["<P1 中需要红色加粗的精确片段>"],
+                "paragraph1_black_bold": ["<P1 中需要黑色加粗的精确片段>"],
+                "paragraph2_red_bold": ["<P2 中需要红色加粗的精确片段>"],
+                "paragraph2_black_bold": ["<P2 中需要黑色加粗的精确片段>"],
             }
         ],
     }, ensure_ascii=False, indent=2))
@@ -266,6 +270,10 @@ def _coerce_draft_items(
             paragraph2_mode=mode,
             importance=importance,
             editor_notes=item.get("editor_notes", ""),
+            paragraph1_red_bold=item.get("paragraph1_red_bold", []),
+            paragraph1_black_bold=item.get("paragraph1_black_bold", []),
+            paragraph2_red_bold=item.get("paragraph2_red_bold", []),
+            paragraph2_black_bold=item.get("paragraph2_black_bold", []),
         ))
     return PolicyCardDraftsOutput(report_date=report_date, items=items)
 
@@ -371,6 +379,10 @@ def rewrite_failed_items(
                 paragraph2_mode=mode,
                 importance=importance,
                 editor_notes=item.get("editor_notes", ""),
+                paragraph1_red_bold=item.get("paragraph1_red_bold", []),
+                paragraph1_black_bold=item.get("paragraph1_black_bold", []),
+                paragraph2_red_bold=item.get("paragraph2_red_bold", []),
+                paragraph2_black_bold=item.get("paragraph2_black_bold", []),
             )
 
     merged = [rewritten_map.get(d.policy_id, d) for d in drafts.items]
@@ -388,6 +400,10 @@ def build_final_report_content(drafts: PolicyCardDraftsOutput) -> FinalReportCon
             paragraph2_mode=d.paragraph2_mode,
             importance=d.importance,
             editor_notes=d.editor_notes,
+            paragraph1_red_bold=d.paragraph1_red_bold,
+            paragraph1_black_bold=d.paragraph1_black_bold,
+            paragraph2_red_bold=d.paragraph2_red_bold,
+            paragraph2_black_bold=d.paragraph2_black_bold,
         )
         for d in drafts.items
     ]

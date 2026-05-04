@@ -1,198 +1,146 @@
 ---
 name: reg-policy-weekly-report-skill-lite
-description: 轻量版"监管政策周报解读 + 自进化学习" Skill。输入是本周政策清单 JSON，输出是符合平安集团高管阅读口径的《监管政策周报》Word 正式版。当用户提到"监管政策周报""监管周报""政策解读周报""平安政策周报""把本周政策跑成周报""本周政策清单生成周报"或类似工作流时，必须使用本 Skill；当用户给到本周政策清单 JSON 并要求出 Word 报告，或要求基于人工最终终稿做 few-shot / forbidden expansion 增量学习时，也必须使用本 Skill。
-version: 0.3.0
+description: >-
+  生成平安集团高管阅读口径的《监管政策周报》或《监管政策解读周报》Word 正式版。用户提到监管政策周报、监管周报、政策解读周报、平安政策周报，要求把某一周监管政策清单生成 DOCX，粘贴 YYYY-MM-DD｜发文机构｜政策标题 格式的政策行，提供 weekly_policies.json，或要求基于历史周报口径改进解读时，使用本 Skill。默认必须按 Skill instruction 由 Codex 直接完成政策检索、事实提炼、平安影响分析和终稿 JSON 编写；除最后将 final_report_content.json 渲染为 Word 外，不使用脚本生成正文、事实卡、草稿或影响判断。
 ---
 
-# reg-policy-weekly-report-skill-lite
+# 监管政策周报
 
-服务对象：平安集团合规管理与经营协同条线，面向集团高管的《监管政策周报》生产链路。
+使用本 Skill 生成面向平安集团高管的监管政策解读周报。默认工作方式是 instruction-first：Codex 依据本文件和必要参考资料自行检索、判断、写稿和质检；脚本只用于最后把结构化终稿渲染成 `.docx`。
 
-定位：**生成质量像业务终稿**，不是搭中台。
+## 核心原则
 
-## 何时使用本 Skill
+- 不用脚本生成正文。默认禁止使用 `python -m src.main run`、`prepare`、`draft`、`generate` 或 `finalize` 生成政策摘要、事实卡、草稿或平安影响判断。
+- 只在最后渲染 Word 时调用：
 
-满足以下任一条件，必须调用本 Skill：
+  ```bash
+  python -m src.main render --input ./output/final_report_content.json --output-dir ./output
+  ```
 
-- 用户提供本周政策清单 JSON，要求生成 Word 周报
-- 用户提到"监管政策周报""监管周报""政策解读周报""平安政策周报"等关键词
-- 用户给到人工最终终稿，要求做 few-shot / forbidden expansion 增量学习
-- 用户要求按平安集团高管阅读口径写"谁受影响、怎么改、先做什么"
+- 可以使用 MCP、Web、文件读取、历史周报、配置文件和公开来源辅助判断，但写作决策必须由 Codex 按本 Skill instruction 完成。
+- 生成正式周报前，必须按 `docs/HISTORICAL_BUSINESS_REPORT_PATTERNS.md` 对齐业务历史终稿的段落颗粒度、平安主体颗粒度和加粗/红色高亮逻辑。
+- 历史周报只能作为“结构、判断颗粒度、高亮逻辑、专业公司映射方式”的参考，不能作为当前期正文来源。即使历史周报中已存在同一期或同一政策，也必须重新基于政策原文和本 Skill instruction 写作，不得复用历史周报成句。
+- 如果用户明确要求做开发回归测试，才可以使用脚本化 pipeline；正常业务出稿不得使用。
 
-## 项目结构
+## 反过拟合边界
 
-```
-.
-├── SKILL.md              # 本文件（Skill 入口）
-├── README.md             # 面向开发者的安装与运行
-├── pyproject.toml / requirements.txt
-├── src/                  # 8 个核心 Python 文件
-│   ├── main.py           # CLI 入口（generate/parse-final/learn/upgrade）
-│   ├── schemas.py        # Pydantic schema
-│   ├── fetcher.py        # 官网抓取
-│   ├── extractor.py      # 抽取 + 聚合 + 事实卡构建
-│   ├── generator.py      # few-shot 检索 + LLM 生成 + 重写
-│   ├── validator.py      # 硬校验
-│   ├── renderer.py       # python-docx 渲染
-│   └── learning.py       # 终稿 diff + few-shot/forbidden 更新
-├── config/               # 业务规则与知识库
-│   ├── business_rules.yaml, prompts.yaml, style.yaml
-│   ├── few_shot_library.json, forbidden_expansion_library.json
-│   └── impact/{pingan_entities,topic_families,scene_families,action_templates,status_action_strength}.json
-├── examples/             # 示例输入与人工终稿
-├── docs/                 # 详细文档（写作规则、QA、命令、差距分析）
-└── tests/                # 单元测试（pytest）
-```
+本 Skill 的目标是生成“业务专家口径一致”的新稿，而不是复刻样稿。使用历史周报时必须遵守：
 
-## 主链路（推荐：Skill-as-instructions 模式）
+- 可以学习：标题层级、两段式结构、P1/P2 分工、专业公司拆分颗粒度、红色/黑色高亮选择逻辑、`direct / scene_direct_related / benchmark / opportunity / none` 的判断边界。
+- 不得学习：历史周报中针对某一政策已经写好的完整句子、段落顺序表达、连续措辞组合、P2 动作句原文。
+- 不得把历史 Word、历史解析 JSON、历史输出 JSON 当作当前期 `final_report_content.json` 的底稿或填充来源。
+- 如果历史文件里已经包含用户本次要生成的期次或政策，必须把它标记为“禁复制样稿”：只抽取它的版式和判断维度，正文必须重新组织。
+- 法规名称、发文机构、日期、生效期、文号等不可改写的事实短语可以一致；除此以外，连续 20 个汉字以上的业务判断表达不应与历史周报相同。
+- 生成后要做相似度自检：任一 P1/P2 与历史周报同类段落高度近似时，保留事实，重写句式、信息组织和业务动作表达。
 
-本 Skill 把"重活"分给会话中的 Claude（你正在使用的这个 LLM），Python 只负责确定性任务（抓取/解析/校验/渲染）。**无需独立的 ANTHROPIC_API_KEY**。
+## 工作流程
 
-### Stage A：准备（python prepare）
+1. 解析输入。
+   - 将 `YYYY-MM-DD｜发文机构｜政策标题` 政策行在会话中解析为条目。
+   - 如用户未指定期号，按清单中最新政策日期之后最近的周日推断 `report_date`，格式为 `YYYY.MM.DD`。
+   - 只纳入监管政策、法律法规、司法解释、规范性文件、专项行动、政策通知；不纳入处罚、人事、纯新闻和无政策文件依据的动态。
 
-```bash
-python -m src.main prepare \
-  --input ./examples/example_weekly_policies.json \
-  --output-dir ./output
-```
+2. 检索和核实。
+   - 对每条政策优先查找官网原文或权威转载；可用 Web/MCP/浏览器工具。
+   - 来源优先级：部委/监管机构/人大/法院/地方政府官网 > 新华社/人民日报/权威媒体 > 其他转载。
+   - 没有稳定来源时，P1 只写标题可支撑的最低事实，并在 `editor_notes` 标注“未检索到稳定原文，建议人工核实”。
 
-产物：
-- `normalized_policies.json` / `fetched_articles.json` / `policy_fact_sheets.json`
-- `retrieved_examples.json`
-- **`generation_prompt.md`** — 包含完整提示词、fact_sheets、few-shot 的 Markdown，会话 LLM 直接读取它
+3. 判断平安影响。
+   - 第二段必须按受影响专业公司或集团职能写，不写笼统“对平安有影响”。
+   - 判断路径：监管对象 → 业务活动 → 平安主体/产品线/团队 → 业务链路 → 动作或影响程度。
+   - 重大直接影响政策可采用“多主体并列”写法：每个主体一组业务链路和动作，用分号切分；不要强行压成一个泛化动作。
+   - 可参考 `config/impact/professional_company_impact_rules.json`、`config/impact/pingan_entities.json` 和 `docs/REFERENCE.md`，但不要让脚本替你判断。
 
-### Stage B：会话 LLM 生成草稿（无需独立 API key）
+4. 写作成稿。
+   - 直接编写 `final_report_content.json`，不要先生成脚本事实卡或脚本草稿。
+   - 结构必须符合：
 
-调用本 Skill 的 Claude Code 会话直接：
-1. `Read output/generation_prompt.md`
-2. 严格按提示词中的写作规则与 schema 产出 drafts JSON
-3. `Write output/policy_card_drafts.json`
-
-**关键约束（会话 LLM 必须遵守）**：
-- `paragraph1` 只能改写 `allowed_paragraph1_facts / core_points / numbers_and_thresholds / time_requirements`
-- `paragraph2` 只能使用 `allowed_paragraph2_entities / allowed_paragraph2_actions`
-- `paragraph2_mode` 必为 `direct / scene_direct_related / benchmark / opportunity / none` 之一
-- `grouped_key` 相同的多条政策合并为 1 条
-- 不写行业背景、宏观分析、空转套话；直接写"谁受影响、怎么改、先做什么"
-- 详细规则见 `docs/REFERENCE.md`
-
-### Stage C：校验 + 渲染（python finalize）
-
-```bash
-python -m src.main finalize --output-dir ./output
-```
-
-产物：
-- `validation_report.json` — 硬校验结果
-- `final_report_content.json`
-- `监管政策周报_YYYY.MM.DD.docx` — 最终交付物
-
-如校验未通过，回 Stage B 修订对应条目后重跑 `finalize`。
-
-## 旧模式（legacy generate，不推荐）
-
-```bash
-export ANTHROPIC_API_KEY="sk-ant-..."
-python -m src.main generate --input ... --output-dir ...
-```
-
-旧模式在 Python 子进程内自调 anthropic SDK 一条龙生成，需要独立 API key。仅为兼容保留。
-
-## 学习链路（自进化）
-
-```
-人工最终终稿 (md)
-   ↓ parse-final
-final_report_parsed.json
-   ↓ learn (diff)
-draft_final_diff.json
-   ↓ 自动追加
-config/few_shot_library.json
-config/forbidden_expansion_library.json
-```
-
-**只做两件事**：few-shot 自动补充 + forbidden expansion 自动补充。
-不做：复杂规则引擎、候选注册中心。
-
-## 核心写作约束（必须强制）
-
-- **结构**：非重点 1 段；重点最多 2 段（P1 政策摘要，P2 平安影响）
-- **paragraph2_mode**：仅允许 `direct` / `scene_direct_related` / `benchmark` / `opportunity` / `none`
-- **P2 必落具体平安主体**（见 `config/impact/pingan_entities.json`）
-- **不写**：行业背景、宏观分析、空转套话
-- **直接写**：谁受影响、怎么改、先做什么
-- **grouped pair**（办法 + 实施公告）必须合并写成一条
-- **第二段只保留 1 个主动作**
-
-> 详细写作规则见 [docs/REFERENCE.md](docs/REFERENCE.md)
-
-## CLI 命令（4 个）
-
-```bash
-# 必需环境变量
-export ANTHROPIC_API_KEY="sk-ant-..."
-
-# 1. 主生成链路
-python -m src.main generate \
-  --input ./examples/example_weekly_policies.json \
-  --output-dir ./output
-
-# 2. 解析人工最终终稿
-python -m src.main parse-final \
-  --input ./examples/example_final_weekly_report.md \
-  --output-dir ./output
-
-# 3. 学习闭环
-python -m src.main learn \
-  --draft ./output/policy_card_drafts.json \
-  --final ./output/final_report_parsed.json \
-  --output-dir ./output
-
-# 4. 升级确认（轻量版仅做配置已更新确认）
-python -m src.main upgrade --output-dir ./output
-```
-
-## 输入输出协议
-
-### 输入：weekly_policies.json
-
-```json
-{
-  "report_date": "2026.04.19",
-  "report_type": "监管政策周报",
-  "policies": [
-    {
-      "date": "2026-04-17",
-      "issuer": "中国证监会",
-      "title": "期货公司监督管理办法（征求意见稿）",
-      "url": "https://www.csrc.gov.cn/...",
-      "include": true,
-      "notes": "可标注 grouped_pair_with / 直接影响 / 对标借鉴 等先验"
+   ```json
+   {
+     "report_title": "监管政策周报",
+     "report_date": "YYYY.MM.DD",
+     "items": [
+       {
+         "title": "发文机构《政策标题》",
+         "url": "原文或权威来源 URL，可为空",
+         "paragraph1": "政策摘要",
+         "paragraph2": "平安影响；无明显影响时为空",
+         "paragraph2_mode": "direct | scene_direct_related | benchmark | opportunity | none",
+         "importance": "major | minor",
+         "editor_notes": "来源、核实限制或编辑备注",
+         "paragraph1_red_bold": ["P1 中需要红色加粗的原文片段"],
+         "paragraph1_black_bold": ["P1 中需要黑色加粗的原文片段"],
+         "paragraph2_red_bold": ["P2 中需要红色加粗的原文片段"],
+         "paragraph2_black_bold": ["P2 中需要黑色加粗的原文片段"]
+        }
+      ]
     }
-  ]
-}
+   ```
+
+5. 自检后渲染。
+   - 逐条检查 P1 是否有来源支撑，P2 是否点名专业公司和具体业务链路。
+   - 逐条检查 `paragraph*_red_bold` 和 `paragraph*_black_bold` 是否均为段落中的精确原文片段。
+   - 确认没有空泛判断、宏观评论、行业背景堆砌、无来源数字。
+   - 对照历史周报做反过拟合检查：除政策标题、机构、日期、文号、生效期等事实短语外，P1/P2 不得与历史样稿句子级一致；如出现相同或高度近似段落，必须重新写。
+   - 保存 `final_report_content.json` 后，只调用 `render` 生成 Word。
+
+## 写作规则
+
+- 非重点条目通常只写 P1；重点条目最多两段，P1 为政策摘要，P2 为平安影响。
+- P1 采用“发布日期 + 发文机构 + 文件名称 + 文件性质/定位 + 核心内容/关键要求 + 生效时间/过渡期”的口径，避免长背景。
+- P1 中的数字、期限、适用范围、文号必须来自可核实来源。
+- major 条目 P1 可写 4-8 句、4-7 个制度要点；minor 条目 P1 通常写 1-3 句、2-3 个要点。
+- P2 必须出现具体主体，例如平安银行、壹钱包、陆控、平安信托、平安产险、平安寿险、平安健康、平安健康险、平安养老险、平安租赁、平安证券、集团科技条线、集团合规部等。
+- P2 必须写具体业务链路，例如数字营销矩阵、灵活宝和闲钱宝对客提示、收银台区隔展示、第三方平台跳转、对公授信、融资租赁投放、信托财产登记、保险理赔追偿、客户数据出境、再保险数据传输、健康服务数据治理、车险残值处置等。
+- P2 不限制为单一动作；`direct` 且涉及多个主体时，按“主体 + 业务链路 + 动作/影响程度”分组，最多 4 组，避免机械铺开所有公司。
+- `direct`：文件直接改变平安某专业公司的合规义务、经营流程、登记/审批/披露/理赔/数据处理要求。
+- `scene_direct_related`：文件不直接点名平安，但明确落到平安已有业务场景。
+- `opportunity`：主要是政策支持、试点、产业机会或能力建设方向。
+- `benchmark`：主要用于对标参考，不写强整改动作。
+- `none`：与平安主营或集团职能无明显关联，`paragraph2` 留空。
+
+## 高亮规则
+
+- 红色加粗用于读者必须优先捕捉的监管事实：生效日期、过渡期、截止日期、核心制度框架、硬性禁止/强制要求、关键比例/阈值、重大适用范围变化。
+- 黑色加粗用于业务定位：受影响的平安主体、产品线、团队，以及 `【已做专项解读】`、`【集团反洗钱团队已做专项解读】` 等集团内部工作标记。
+- 高亮字段必须填写段落中的精确子串；不要写正则、不要改写、不要整句整段高亮。
+- major 条目通常 3-8 处高亮；minor 条目通常 0-3 处高亮。宁可少标，不要把普通背景句标红。
+- P2 中如果同一句既有主体又有整改动作，主体用黑色加粗，硬性动作或冲突要求才用红色加粗。
+
+## 专业公司影响口径
+
+- 银行类：优先看对公授信、零售贷款、支付结算、跨境金融、反洗钱、数据治理和消费者保护。
+- 信托/资管/资本：优先看信托财产登记、受托管理、底层资产、投资项目、存续管理和信息披露。
+- 产险：优先看车险、责任险、货运险、船舶险、理赔、追偿、残值处置和合作方管理。
+- 寿险/健康险/养老险：优先看保险销售、客户信息、健康服务、养老服务、长期保障和适老服务。
+- 租赁：优先看设备融资、资产登记、租赁物管理、回收处置和产业客户。
+- 集团科技条线：优先看数据出境、模型治理、系统建设、客户触点、平台服务和信息安全。
+- 集团合规部：优先看跨公司统筹、制度映射、监管沟通、重大合规义务和集团统一治理。
+
+## 禁止写法
+
+- “对平安集团有一定影响，应持续关注。”
+- “金融机构应开展差距映射。”
+- “该政策体现了监管趋严趋势。”
+- “有助于推动行业高质量发展。”
+- 没有具体主体、没有业务链路、没有来源支撑的判断。
+
+## 最终渲染
+
+Codex 完成 `final_report_content.json` 后，运行：
+
+```bash
+python -m src.main render --input ./output/final_report_content.json --output-dir ./output
 ```
 
-规则：`include=false` 跳过；`title` 仅政策正式全称；`url` 优先官网。
+输出文件为 `output/监管政策周报_YYYY.MM.DD.docx`。渲染失败时只修复 JSON 结构或渲染器问题，不改用脚本 pipeline 生成正文。
 
-### 输出（output/）
+## 资源
 
-主链路：`normalized_policies.json` → `fetched_articles.json` → `policy_fact_sheets.json` → `retrieved_examples.json` → `policy_card_drafts.json` → `validation_report.json` → `final_report_content.json` → `监管政策周报_YYYY.MM.DD.docx` + `run_log.md`
-
-学习链路：`final_report_parsed.json` → `draft_final_diff.json` → `learning_update_report.json`
-
-## 设计原则
-
-1. 复杂业务判断交给 **LLM + prompt + few-shot**
-2. Python 代码只负责：**供数 / 约束 / 校验 / 渲染 / 简单学习闭环**
-3. 优先"生成结果像业务终稿"，不是"代码层级架构漂亮"
-4. 不允许新增 `src/impact/`、`src/generation/` 等子目录
-
-## 相关文档
-
-- [README.md](README.md) — 安装、运行、环境变量
-- [docs/REFERENCE.md](docs/REFERENCE.md) — 完整写作规则、paragraph2_mode 详解、平安主体清单
-- [docs/QUALITY_CHECKLIST.md](docs/QUALITY_CHECKLIST.md) — 交付前质量检查清单
-- [docs/run_instructions.md](docs/run_instructions.md) — 详细运行手册与 FAQ
-- [docs/expected_output_notes.md](docs/expected_output_notes.md) — 输出样例说明
-- [docs/gap_analysis_against_real_report.md](docs/gap_analysis_against_real_report.md) — 与业务终稿的差距分析
+- `src/main.py`：仅默认使用 `render` 命令生成 Word；其他命令只供开发回归或用户明确要求时使用。
+- `src/schemas.py`：可查看 `FinalReportContent` 结构。
+- `src/renderer.py`：Word 渲染器。
+- `config/impact/*.json`：可作为专业公司和场景判断参考。
+- `docs/HISTORICAL_BUSINESS_REPORT_PATTERNS.md`：业务历史终稿的结构、P2 写法和高亮规则。
+- `docs/REFERENCE.md`：需要更细口径时读取。
+- `docs/QUALITY_CHECKLIST.md`：最终 Word 自检清单。

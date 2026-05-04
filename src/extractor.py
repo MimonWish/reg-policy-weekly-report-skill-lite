@@ -90,6 +90,7 @@ def _load_configs() -> dict[str, Any]:
         "scene_families": _load_json(IMPACT_DIR / "scene_families.json"),
         "action_templates": _load_json(IMPACT_DIR / "action_templates.json"),
         "status_action_strength": _load_json(IMPACT_DIR / "status_action_strength.json"),
+        "professional_company_impact_rules": _load_json(IMPACT_DIR / "professional_company_impact_rules.json"),
         "forbidden_expansion_library": _load_json(CONFIG_DIR / "forbidden_expansion_library.json"),
     }
 
@@ -294,6 +295,32 @@ def _score_by_keywords(text: str, keywords: Iterable[str]) -> int:
     return score
 
 
+def _merge_unique(*groups: Iterable[str]) -> list[str]:
+    merged: list[str] = []
+    for group in groups:
+        for item in group:
+            if item and item not in merged:
+                merged.append(item)
+    return merged
+
+
+def _match_professional_company_rules(title: str, raw_text: str, rules_config: dict[str, Any]) -> list[dict[str, Any]]:
+    """Return explicit professional-company impact rules matched by policy title/text.
+
+    These rules are intentionally narrower than topic families. They are used to
+    avoid generic second paragraphs when public source extraction is thin.
+    """
+    text = f"{title}\n{raw_text[:5000]}"
+    matched: list[tuple[int, dict[str, Any]]] = []
+    for rule in rules_config.get("rules", []):
+        keywords = rule.get("keywords", [])
+        score = _score_by_keywords(text, keywords)
+        if score > 0:
+            matched.append((score, rule))
+    matched.sort(key=lambda item: item[0], reverse=True)
+    return [rule for _, rule in matched[:3]]
+
+
 def _iter_topic_families(topic_config: dict[str, Any]) -> list[dict[str, Any]]:
     return topic_config.get("families", [])
 
@@ -472,6 +499,25 @@ def _pick_focus_phrases(scene_hints: list[str], scene_config: dict[str, Any]) ->
     return seen[:3]
 
 
+def _rule_values(rules: list[dict[str, Any]], key: str) -> list[str]:
+    values: list[str] = []
+    for rule in rules:
+        value = rule.get(key, [])
+        if isinstance(value, str):
+            values.append(value)
+        else:
+            values.extend(value or [])
+    return values
+
+
+def _first_rule_value(rules: list[dict[str, Any]], key: str) -> str:
+    for rule in rules:
+        value = rule.get(key)
+        if isinstance(value, str) and value:
+            return value
+    return ""
+
+
 def _filter_forbidden_patterns(topic_hints: list[str], scene_hints: list[str], forbidden_config: dict[str, Any]) -> list[str]:
     items = forbidden_config.get("items", [])
     patterns = [it.get("pattern", "") for it in items[:40] if it.get("pattern")]
@@ -608,7 +654,20 @@ def extract_fact_sheets(
 
         topic_hints = _match_topic_hints(article.title, raw_text, configs["topic_families"])
         scene_hints = _match_scene_hints(article.title, raw_text, topic_hints, configs["scene_families"])
+        professional_rules = _match_professional_company_rules(
+            article.title,
+            raw_text,
+            configs["professional_company_impact_rules"],
+        )
+        topic_hints = _merge_unique(topic_hints, _rule_values(professional_rules, "topic_hints"))
+        scene_hints = _merge_unique(scene_hints, _rule_values(professional_rules, "scene_hints"))
         entities = _match_entities(topic_hints, scene_hints, configs["pingan_entities"], configs["topic_families"], configs["scene_families"])
+        rule_entities = _rule_values(professional_rules, "entities")
+        if rule_entities:
+            # Explicit professional-company rules are curated from business weekly
+            # report style, so prefer them over broad topic-family inference.
+            include_inferred = any(rule.get("include_inferred_entities") for rule in professional_rules)
+            entities = _merge_unique(rule_entities, entities if include_inferred else [])[:6]
         recommended_action, allowed_actions = _select_recommended_action(
             status,
             topic_hints,
@@ -617,15 +676,27 @@ def extract_fact_sheets(
             configs["action_templates"],
             configs["status_action_strength"],
         )
+        rule_actions = _rule_values(professional_rules, "actions")
+        if rule_actions:
+            recommended_action = rule_actions[0]
+            allowed_actions = _merge_unique(rule_actions, allowed_actions)
         # notes 作为 P2 动作的优先上下文
         if notes_text and notes_text not in allowed_actions:
             allowed_actions = [notes_text] + allowed_actions
 
         paragraph2_mode = _decide_paragraph2_mode(status, topic_hints, scene_hints, entities, configs["topic_families"], configs["scene_families"])
+        rule_mode = _first_rule_value(professional_rules, "paragraph2_mode")
+        if rule_mode:
+            paragraph2_mode = rule_mode
         importance, importance_reason = _decide_importance(status, topic_hints, scene_hints, entities, configs["topic_families"])
-        impact_focus = _pick_focus_phrases(scene_hints, configs["scene_families"])
+        rule_importance = _first_rule_value(professional_rules, "importance")
+        if rule_importance:
+            importance = rule_importance
+            importance_reason = _first_rule_value(professional_rules, "importance_reason") or importance_reason
+        impact_focus = _merge_unique(_rule_values(professional_rules, "impact_focus"), _pick_focus_phrases(scene_hints, configs["scene_families"]))[:4]
 
-        summary_anchor = f"{_cn_date(article.date)}，{article.issuer}{'就' if status == '征求意见稿' else '发布'}《{article.title}》，" + (core_points[0].rstrip("。") if core_points else "围绕相关制度安排作出部署。")
+        title_for_sentence = article.title if article.title.startswith("《") else f"《{article.title}》"
+        summary_anchor = f"{_cn_date(article.date)}，{article.issuer}{'就' if status == '征求意见稿' else '发布'}{title_for_sentence}，" + (core_points[0].rstrip("。") if core_points else "围绕相关制度安排作出部署。")
         allowed_p1 = _build_allowed_fact_lists(summary_anchor, core_points, effective_or_deadline, numbers, times)
         forbidden = _filter_forbidden_patterns(topic_hints, scene_hints, configs["forbidden_expansion_library"])
         source_ids = article.metadata.get("source_policy_ids", [article.policy_id]) if isinstance(article.metadata, dict) else [article.policy_id]

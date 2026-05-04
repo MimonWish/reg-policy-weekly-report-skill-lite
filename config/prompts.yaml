@@ -63,6 +63,7 @@ weekly_report_generation_prompt: |
   8. paragraph2_subtype 决定 direct / scene_direct_related / benchmark / opportunity 内部的具体写法（如 multi_entity_multi_action / with_group_progress / benchmark_long / opportunity_indicative 等）。生成时必须按 fact_sheet.paragraph2_subtype 的写法 pattern 落地。
   9. 编辑注记（如【已做专项解读】【集团反洗钱团队已做专项解读】）只能在 fact_sheet.group_internal_status 非"无"时生成，且严格按 business_rules.editor_notes_rules 的 allowed_tags / allowed_subjects / placement_rules 拼接。LLM 不得自行推理出注记。
   10. 输出 items[].title 必须使用 fact_sheet.title_display（即"机构 + 《文件名》"形式），不要只输出文件名。
+  11. few_shots 和历史优质样例只能学习结构、颗粒度、主体映射和高亮逻辑；不得复用样例中的完整句子或段落。若样例中存在同一政策或同一期内容，必须视为"禁复制样稿"，重新基于 fact_sheet 组织正文。
 
   【输出格式】
   只输出 JSON：
@@ -84,7 +85,11 @@ weekly_report_generation_prompt: |
           "subject": "",
           "placement": "paragraph2_end|paragraph1_end|paragraph2_independent_sentence|none"
         },
-        "editor_notes": ""
+        "editor_notes": "",
+        "paragraph1_red_bold": [],
+        "paragraph1_black_bold": [],
+        "paragraph2_red_bold": [],
+        "paragraph2_black_bold": []
       }
     ]
   }
@@ -102,6 +107,7 @@ weekly_report_generation_prompt: |
     subject 必须来自 business_rules.editor_notes_rules.allowed_subjects（"（不指定主体）"对应空字符串）。
     placement 决定渲染位置。
   - editor_notes：是 LLM 自由发挥的内部审计备注，与 editor_note 不同，不会渲染到正文。
+  - paragraph*_red_bold / paragraph*_black_bold：填写段落中的精确原文片段，用于最终 Word 渲染。红色加粗用于生效日、过渡期、硬性禁止/强制要求、核心制度框架和关键阈值；黑色加粗用于受影响平安主体、产品线、团队和【已做专项解读】等内部工作标记。
 
   【整期规则】
   1. 按政策发布日期倒序输出。
@@ -111,19 +117,20 @@ weekly_report_generation_prompt: |
   5. opportunity_watch 默认一段，只有确有必要时才保留第二段机会句。
   6. 不写导语，不写总结，不写“本周总体来看”等空泛总括段。
   7. 不写行业背景，不写宏观趋势，不写政策意义泛论。
+  8. 不写与 few_shots / 历史终稿句子级一致的段落；除标题、日期、机构、文号、生效期等事实短语外，不得连续复用 20 个汉字以上的历史表达。
 
   【paragraph1 规则：政策摘要段】
   paragraph1 必须做到：
   1. 以“X月X日，X部门发布《XXXX》”开头。
   2. 写清文件性质或定位。
-  3. 写清 2-4 个核心制度变化。
+  3. 写清核心制度变化：major 条目 4-7 个要点，minor 条目 2-3 个要点。
   4. 写清当前状态：
      - 正式实施
      - 征求意见稿
      - 修订草案
      - 专项行动/计划
      - 标题级分析
-  5. 控制在 2-4 句。
+  5. 句数按重要性控制：major 条目可写 4-8 句，minor 条目通常 1-3 句。
   6. 只能使用 fact_sheet 中提供的事实。
 
   paragraph1 绝对禁止：
@@ -136,11 +143,26 @@ weekly_report_generation_prompt: |
   - 使用 fact_sheet 之外的新制度变化
 
   【paragraph2 规则：平安影响段】
+  paragraph2 不是“有影响”的占位句，必须是按受影响专业公司拆解的业务判断。写第二段前先完成三步：
+  1. 判断监管对象对应的平安专业公司或集团职能；
+  2. 写清该专业公司的具体受影响业务链路，如产品、系统、流程、数据、投资、理赔、销售、披露、外部合作、存续管理；
+  3. 给出该主体最需要先做的动作或影响程度。direct 且涉及多个主体时，允许每个主体一组动作，用分号切分。
+
+  禁止写成：
+  - “对平安相关业务有影响。应开展相关要求与现有机制的差距映射。”
+  - “对集团各业务条线有影响。”
+  - “平安集团应高度重视并持续关注。”
+
+  正确写法示例：
+  - “平安信托需梳理股权信托财产登记和合伙企业财产份额登记适用项目清单；平安资本需复核股权投资项目中可登记财产份额的存续管理口径。”
+  - “平安产险需复核船舶险、货运险海事理赔和追偿案件的新旧法适用边界。”
+  - “平安银行对公业务可关注科技企业设备更新贷款投放机会；平安租赁需评估设备融资项目与再贷款政策口径的衔接空间。”
+
   paragraph2 只允许五种模式：
 
   1. direct
      格式：
-     对平安XXX有直接影响。应XXX。
+     单主体可写“对平安XXX有直接影响。应XXX。”；多主体按“平安A需…；平安B需…；平安C需…”并列。
 
   2. scene_direct_related
      格式：
@@ -188,7 +210,8 @@ weekly_report_generation_prompt: |
          - 例：对平安期货有直接影响。应开展存量业务回归路径和资本充足性差距评估。
      1.2 multi_entity_multi_action（多主体多动作并列）
          - 多主体（2-5 个）按"主体A需…；主体B需…；主体C需…"分号切分。
-         - 每个主体只跟一个核心动作 + 可选的落点短语。
+         - 每个主体只跟一个核心动作 + 必要的业务链路落点短语。
+         - 各主体动作必须互相区分，不能所有主体都写“开展差距映射”。
          - 例：平安银行需清理不合规人员账号；壹钱包需调整收银台展示；平安产险、平安寿险需全面检视第三方平台合作模式。
      1.3 with_status_assessment（影响 + 现状判断）
          - 先写主体受影响，再写现状判断与受影响程度。
@@ -264,12 +287,14 @@ weekly_report_generation_prompt: |
   - 不是分析笔记
   - 不是抓取摘要
   - 不是规则拼装
+  - 不是历史周报复刻稿
   - 只输出 JSON，不要输出解释
 
   【特别警告】
   如果某条政策的 paragraph1 出现不在 fact_sheet 中的核心制度变化，视为失败。
   如果 paragraph2 使用了不在 allowed_paragraph2_entities / allowed_paragraph2_actions 中的主体或动作，视为失败。
   如果同一 grouping_key 输出了两条卡片，视为失败。
+  如果 paragraph1 / paragraph2 与 few_shots 或历史终稿高度近似，视为失败，必须保留事实后重新组织语言。
 
 report_rewrite_prompt: |
   你是平安集团监管政策周报的修稿编辑。你的任务是针对“未通过硬校验”的整期草稿，进行最小必要重写，使其符合最终业务终稿标准。
@@ -334,6 +359,7 @@ report_rewrite_prompt: |
   3. 不允许引入新制度变化。
   4. 不允许引入新主体。
   5. 不允许引入新动作。
+  6. 不允许把历史优质样例或 few_shots 中的完整句子改几个词后复用；重写必须基于 fact_sheet 重新组织。
 
   【重点修法】
   1. 如果 paragraph1 使用了 fact_sheet 之外的事实
@@ -366,6 +392,9 @@ report_rewrite_prompt: |
   10. 如果 paragraph2 太长
       → 按 paragraph2_mode 对应的 sentence_count_range 压缩；multi_entity_multi_action 子类型保留多主体分号结构，不强行裁成单主体单动作。
 
+  11. 如果段落与历史终稿或 few_shots 句子级相似
+      → 保留可核实事实和必要主体，重新安排句序、要点组合和动作表述；不能只替换同义词。
+
   【语言要求】
   - 像最终业务终稿
   - 不像调试稿
@@ -386,6 +415,7 @@ report_rewrite_prompt: |
 
   【最终要求】
   只输出 JSON，不要输出解释。
+  若重写对象来自历史终稿，不得输出与历史终稿相同或高度近似的段落。
 
 final_report_parser_prompt: |
   你是监管政策周报的结构化解析器。你的任务是把“人工最终终稿”解析成结构化对象，供后续自进化学习使用。

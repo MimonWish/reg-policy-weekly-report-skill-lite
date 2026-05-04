@@ -329,6 +329,10 @@ class PolicyCardDraft(StrictBaseModel):
     paragraph2_mode: Paragraph2Mode = Field(default="none", description="第二段模式")
     importance: Importance = Field(default="minor", description="重点程度")
     editor_notes: str = Field(default="", description="生成器或重写器备注")
+    paragraph1_red_bold: List[str] = Field(default_factory=list, description="P1 中需要红色加粗的精确片段")
+    paragraph1_black_bold: List[str] = Field(default_factory=list, description="P1 中需要黑色加粗的精确片段")
+    paragraph2_red_bold: List[str] = Field(default_factory=list, description="P2 中需要红色加粗的精确片段")
+    paragraph2_black_bold: List[str] = Field(default_factory=list, description="P2 中需要黑色加粗的精确片段")
 
 
 class PolicyCardDraftsOutput(StrictBaseModel):
@@ -349,6 +353,10 @@ class FinalReportItem(StrictBaseModel):
     paragraph2_mode: Paragraph2Mode = Field(default="none", description="第二段模式")
     importance: Importance = Field(default="minor", description="重点程度")
     editor_notes: str = Field(default="", description="最终编辑备注")
+    paragraph1_red_bold: List[str] = Field(default_factory=list, description="P1 中需要红色加粗的精确片段")
+    paragraph1_black_bold: List[str] = Field(default_factory=list, description="P1 中需要黑色加粗的精确片段")
+    paragraph2_red_bold: List[str] = Field(default_factory=list, description="P2 中需要红色加粗的精确片段")
+    paragraph2_black_bold: List[str] = Field(default_factory=list, description="P2 中需要黑色加粗的精确片段")
 
 
 class FinalReportContent(StrictBaseModel):

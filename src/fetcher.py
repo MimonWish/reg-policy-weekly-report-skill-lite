@@ -48,9 +48,8 @@ def _make_policy_id(issuer: str, title: str, date: str) -> str:
 def _make_title_display(issuer: str, title: str) -> str:
     if title.startswith(issuer):
         return title
-    if title.startswith("《") and title.endswith("》"):
-        return f"{issuer}{title}"
-    return f"{issuer}《{title}》"
+    title_text = title if title.startswith("《") else f"《{title}》"
+    return f"{issuer}{title_text}"
 
 
 def _is_official_url(url: str) -> bool:
@@ -79,6 +78,16 @@ def _clean_text(html: str) -> str:
 
 
 def _fetch_one(client: httpx.Client, article: FetchedArticle, retries: int = 2, timeout: float = 15.0) -> FetchedArticle:
+    if not article.url.strip():
+        return article.model_copy(
+            update={
+                "fetch_status": "title_only",
+                "fetch_error": "empty url",
+                "title_only_fallback": True,
+                "metadata": {"reason": "empty url"},
+            }
+        )
+
     warning = "" if _is_official_url(article.url) else f"非官网链接: {article.url}"
 
     for attempt in range(retries + 1):
