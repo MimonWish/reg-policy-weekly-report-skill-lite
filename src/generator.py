@@ -121,16 +121,58 @@ def build_generation_prompt(
         "forbidden_expansions": [f["pattern"] for f in forbidden[:20]],
     }
 
+    # 识别"内容稀薄"的事实卡：需要会话 LLM 主动检索补充
+    thin_indicators = ("title_only fallback", "llm_inferred", "未抓取到正文", "navigation")
+    thin_entries: list[dict[str, str]] = []
+    for fs in fact_sheets_output.fact_sheets:
+        notes_text = " ".join(fs.quality_notes or [])
+        is_thin = any(ind in notes_text for ind in thin_indicators) or len(fs.source_excerpt or "") < 200
+        if is_thin:
+            thin_entries.append({
+                "policy_id": fs.policy_id,
+                "title": fs.title,
+                "issuer": fs.issuer,
+                "publish_date": fs.publish_date,
+                "url": fs.url or "",
+                "reason": notes_text or "source_excerpt 过短",
+            })
+
     parts: list[str] = []
     parts.append("# 监管政策周报草稿生成任务")
     parts.append("")
     parts.append(f"**周报日期**：{fact_sheets_output.report_date}")
     parts.append(f"**待生成条数**：{len(fact_sheets_output.fact_sheets)}")
+    parts.append(f"**内容稀薄（需主动检索）条数**：{len(thin_entries)}")
     parts.append("")
     parts.append("## 系统指令（写作规则）")
     parts.append("")
     parts.append(system_prompt or "_(prompts.yaml 未配置 weekly_report_generation_prompt)_")
     parts.append("")
+
+    # 关键新增：Web 检索强制指令
+    if thin_entries:
+        parts.append("## ⚙ 关键步骤：先检索再写稿")
+        parts.append("")
+        parts.append("以下事实卡因抓取退化为 title-only 或正文不足，**禁止仅凭 fact_sheet 现有字段直接生成 P1**。")
+        parts.append("你必须在写稿前，对每条这样的政策：")
+        parts.append("")
+        parts.append("1. **先用 `WebFetch`** 重抓 `url`（如 fact_sheet.url 仍是政策官网链接）；")
+        parts.append("2. 若 `WebFetch` 仍是导航页/PDF 跳转，**改用 `WebSearch`** 搜索关键词：")
+        parts.append("   - `{机构} {政策名} 全文`、`{政策名} 征求意见稿`、`{政策名} 主要内容 解读`")
+        parts.append("3. **优先采信**官方网站、新华社/人民日报/财新/21财经的报道；")
+        parts.append("4. 把检索得到的具体阈值、数字、期限、义务**回填到 P1**（覆盖 fact_sheet 的通用兜底句）；")
+        parts.append("5. 检索来源在 `editor_notes` 字段标注，例如 `editor_notes: \"[已检索补充：来源 财新2026-04-17]\"`；")
+        parts.append("6. 若三轮检索后仍找不到具体内容，则**保留 fact_sheet 兜底句** + 在 `editor_notes` 写 `[未检索到具体内容，建议人工核实政策原文]`。")
+        parts.append("")
+        parts.append("### 需要主动检索的政策清单")
+        parts.append("")
+        parts.append("```json")
+        parts.append(json.dumps(thin_entries, ensure_ascii=False, indent=2))
+        parts.append("```")
+        parts.append("")
+        parts.append("> **注意**：如本周清单可能漏收政策（用户提到业务终稿条数显著多于本清单），可在写完核心条目后另行用 `WebSearch` 补全本周监管动态，并在 editor_notes 中提示人工核对。")
+        parts.append("")
+
     parts.append("## 输入数据（fact_sheets + few-shot + 业务规则）")
     parts.append("")
     parts.append("```json")
