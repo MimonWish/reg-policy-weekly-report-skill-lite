@@ -1,0 +1,279 @@
+{
+  "version": "1.0",
+  "examples": [
+    {
+      "example_id": "fs_grouped_001",
+      "example_type": "grouped_policy_pair",
+      "trigger_features": {
+        "status": "征求意见稿",
+        "topic_hints": ["期货监管", "行政许可", "子公司业务边界"],
+        "scene_hints": ["期货经营边界场景"],
+        "paragraph2_mode": "direct",
+        "importance": "major"
+      },
+      "paragraph1": "4月17日，中国证监会就《期货公司监督管理办法（征求意见稿）》及配套实施规定公开征求意见，重点将期货做市交易、衍生品交易等业务由子公司上升至期货公司持牌经营并实施行政许可管理，同时通过分类提高最低注册资本要求，并对子公司存量业务回归设置18个月过渡期。意见反馈截止时间为5月17日。",
+      "paragraph2": "对平安期货有直接影响。应开展存量业务回归路径和资本充足性差距评估。",
+      "notes": "适用于办法+实施公告合并写法。第一段合并主文件和配套安排，第二段只保留一个主体和一个主动作。"
+    },
+    {
+      "example_id": "fs_direct_001",
+      "example_type": "direct_major",
+      "trigger_features": {
+        "status": "正式实施",
+        "topic_hints": ["跨境金融", "境外贷款", "外汇管理"],
+        "scene_hints": ["银行跨境授信场景"],
+        "paragraph2_mode": "direct",
+        "importance": "major"
+      },
+      "paragraph1": "4月15日，中国人民银行、国家外汇管理局发布《关于调整银行业金融机构境外贷款业务有关事宜的通知》，明确将境外贷款杠杆率上限由0.5提高至1.5，并统一优化银行业金融机构开展境外贷款业务的口径和管理要求。文件已正式实施。",
+      "paragraph2": "对平安银行对公业务有直接影响，重点落在跨境贷款额度管理和间接授信边界。应梳理跨境授信流程口径。",
+      "notes": "适用于直接影响银行跨境业务的正式实施文件。第一段要把关键数字写实，第二段要补业务落点短语。"
+    },
+    {
+      "example_id": "fs_direct_002",
+      "example_type": "direct_major",
+      "trigger_features": {
+        "status": "正式实施",
+        "topic_hints": ["网络营销", "金融消费者保护", "第三方平台"],
+        "scene_hints": ["数字营销与第三方平台场景", "客户告知与展示区隔场景"],
+        "paragraph2_mode": "scene_direct_related",
+        "importance": "major"
+      },
+      "paragraph1": "4月X日，监管部门发布《金融产品网络营销管理办法》，围绕第三方平台合作、直播短视频营销、营销内容审核和支付工具与贷款产品区隔展示等提出明确要求，并同步细化责任边界和留痕义务。文件已正式实施。",
+      "paragraph2": "对平安银行零售业务有直接影响，后续将改变数字营销矩阵、第三方平台合作和收银台展示场景。应调整支付工具与贷款产品区隔展示。",
+      "notes": "适用于数字营销和消保类政策。第二段不要泛写“修订制度”，优先落到展示和合作链路。"
+    },
+    {
+      "example_id": "fs_scene_001",
+      "example_type": "scene_direct_related",
+      "trigger_features": {
+        "status": "正式实施",
+        "topic_hints": ["分级诊疗", "医疗协同", "医保支付"],
+        "scene_hints": ["医疗服务与支付衔接场景"],
+        "paragraph2_mode": "scene_direct_related",
+        "importance": "major"
+      },
+      "paragraph1": "4月9日，国务院办公厅发布《关于加快建设分级诊疗体系的若干措施》，围绕紧密型医联体建设、基层首诊、双向转诊、资源共享和医保支付协同等方面作出部署，并提出分阶段推进要求。文件已正式实施。",
+      "paragraph2": "对平安医疗健康板块、平安健康险和养老险有直接影响，后续将改变健康服务合作、保险支付衔接和慢病管理场景。应优先做地方实施细则映射。",
+      "notes": "适用于医疗健康和服务协同类政策。第二段优先写具体业务场景，不只点公司名。"
+    },
+    {
+      "example_id": "fs_scene_002",
+      "example_type": "scene_direct_related",
+      "trigger_features": {
+        "status": "征求意见稿",
+        "topic_hints": ["拟人化互动", "数字虚拟人", "人工智能服务"],
+        "scene_hints": ["AI互动场景"],
+        "paragraph2_mode": "scene_direct_related",
+        "importance": "major"
+      },
+      "paragraph1": "4月10日，国家网信部门发布《人工智能拟人化互动服务管理暂行办法》，围绕拟人化服务标识、用户告知、内容边界、人工干预和责任留痕等提出要求，并对持续性拟人互动服务设置专门治理安排。文件处于征求意见阶段。",
+      "paragraph2": "对集团科技条线、平安银行线上服务和保险数字员工场景有直接影响，后续将改变线上服务、数字员工和导诊陪伴场景。应盘点拟人化互动场景并建立人工干预机制。",
+      "notes": "适用于AI互动场景。征求意见稿也可写动作，但动作必须是评估、盘点、预研、机制设计，不能写立即整改。"
+    },
+    {
+      "example_id": "fs_scene_003",
+      "example_type": "scene_direct_related",
+      "trigger_features": {
+        "status": "正式实施",
+        "topic_hints": ["交易规则", "终端展示", "订单校验"],
+        "scene_hints": ["证券终端与订单控制场景"],
+        "paragraph2_mode": "scene_direct_related",
+        "importance": "major"
+      },
+      "paragraph1": "4月10日，上海证券交易所发布《交易规则》，围绕盘后固定价格交易扩围、基金收盘集合竞价、风险警示股票交易机制和相关配套安排作出调整，并明确实施时间。文件已正式实施。",
+      "paragraph2": "对平安证券交易与经纪有直接影响，后续将改变终端展示、订单校验、风控阈值和客户提示场景。应提前切换交易参数。",
+      "notes": "适用于交易规则类政策。第二段优先落到交易终端和风控参数，不泛写制度修订。"
+    },
+    {
+      "example_id": "fs_benchmark_001",
+      "example_type": "benchmark_only",
+      "trigger_features": {
+        "status": "正式实施",
+        "topic_hints": ["域外管辖", "涉外法律风险"],
+        "scene_hints": ["境外法律风险识别场景"],
+        "paragraph2_mode": "none",
+        "importance": "minor"
+      },
+      "paragraph1": "4月13日，国务院发布《中华人民共和国反外国不当域外管辖条例》，正式施行。条例明确中国主体应对外国不当域外管辖的阻断机制、救济路径和相关处置安排，属于国家层面的涉外法治规则。",
+      "paragraph2": "",
+      "notes": "适用于国家层面对标型文件。默认只保留一段，不强行补第二段。"
+    },
+    {
+      "example_id": "fs_benchmark_002",
+      "example_type": "benchmark_only",
+      "trigger_features": {
+        "status": "修订草案",
+        "topic_hints": ["行政复议", "程序规则", "行政争议救济"],
+        "scene_hints": [],
+        "paragraph2_mode": "benchmark",
+        "importance": "minor"
+      },
+      "paragraph1": "4月17日，国务院常务会议审议通过《中华人民共和国行政复议法实施条例（修订草案）》，对行政复议申请、受理、审理和衔接机制等配套规则作出完善，当前处于草案阶段。",
+      "paragraph2": "平安集团不直接适用该文件，但应对标其核心要求，优先补齐行政争议处理流程衔接机制。",
+      "notes": "适用于不直接适用但需要保留一句对标口径的 benchmark 项。第二段只能一句。"
+    },
+    {
+      "example_id": "fs_opportunity_001",
+      "example_type": "opportunity_watch",
+      "trigger_features": {
+        "status": "正式实施",
+        "topic_hints": ["创业板改革", "上市标准", "资本市场改革"],
+        "scene_hints": ["投行承做与审核场景", "资本市场配置与战略投资场景"],
+        "paragraph2_mode": "opportunity",
+        "importance": "major"
+      },
+      "paragraph1": "4月10日，深交所等部门发布深化创业板改革配套规则，围绕上市标准、再融资安排、审核机制和中长期资金参与等方面作出优化，并同步明确配套实施口径。文件已正式实施。",
+      "paragraph2": "平安证券投行业务可关注项目扩容带来的业务机会。",
+      "notes": "适用于资本市场改革类机会项。第二段克制写机会，不写整改动作。"
+    },
+    {
+      "example_id": "fs_opportunity_002",
+      "example_type": "opportunity_watch",
+      "trigger_features": {
+        "status": "计划",
+        "topic_hints": ["物联网", "产业创新", "行业发展行动方案"],
+        "scene_hints": ["客户触点数据治理场景", "AI互动场景"],
+        "paragraph2_mode": "opportunity",
+        "importance": "minor"
+      },
+      "paragraph1": "4月3日，工信部等九部门发布《推动物联网产业创新发展行动方案（2026—2028年）》，围绕终端能力、行业应用、标准建设和产业生态等方面提出阶段性推进安排。文件属于行动计划。",
+      "paragraph2": "平安医疗健康板块可关注智能终端和健康硬件接入带来的场景机会。",
+      "notes": "适用于产业发展类计划文件。第二段只写观察和机会，不写整改。"
+    },
+    {
+      "example_id": "fs_multi_entity_001",
+      "example_type": "direct_major",
+      "trigger_features": {
+        "status": "正式实施",
+        "topic_hints": ["网络营销", "金融产品展示", "第三方平台合作"],
+        "scene_hints": ["数字营销矩阵场景", "收银台展示场景", "第三方平台合作场景"],
+        "paragraph2_mode": "direct",
+        "paragraph2_subtype": "multi_entity_multi_action",
+        "importance": "major"
+      },
+      "paragraph1": "4月26日，中国人民银行等八部门联合发布《金融产品网络营销管理办法》，围绕第三方平台合作资质、直播短视频营销内容审核、支付工具与贷款产品区隔展示、从业人员账号管理和留痕义务等提出明确要求。文件已正式实施。",
+      "paragraph2": "平安银行需清理数字营销矩阵中涉及不合规的从业人员及个人账号，灵活宝和闲钱宝业务需完善对客提示并重新审查与第三方平台的合作协议；壹钱包需调整收银台页面，将支付工具与贷款等金融产品严格区隔展示；平安产险、平安寿险需全面检视并调整与第三方平台的合作模式。",
+      "notes": "落差1示范：多主体多动作并列写法。每个主体用分号切分，每主体跟一个核心动作。不要把多主体动作糊在一句里。"
+    },
+    {
+      "example_id": "fs_with_status_assessment_001",
+      "example_type": "direct_major",
+      "trigger_features": {
+        "status": "征求意见稿",
+        "topic_hints": ["个人贷款", "综合融资成本", "利率披露"],
+        "scene_hints": ["消金业务场景", "担保业务场景"],
+        "paragraph2_mode": "direct",
+        "paragraph2_subtype": "with_status_assessment",
+        "importance": "major"
+      },
+      "paragraph1": "4月X日，国家金融监督管理总局就《个人贷款业务明示综合融资成本规定》公开征求意见，要求金融机构向借款人明示年化综合融资成本，统一口径并规范披露方式，意见反馈截止时间为X月X日。",
+      "paragraph2": "平安银行方面，现行综合成本披露管理较为完善，预计受新规影响较小；陆控担保业务（融易）方面，贷后催收压力将增加；陆控消金业务方面，预计届时客诉舆情压力将加大。应优先开展差距分析并评估系统改造需求。",
+      "notes": "落差1/7示范：影响+现状判断写法（with_status_assessment）。多主体分别给出受影响程度判断，不是统一写一个动作。"
+    },
+    {
+      "example_id": "fs_with_group_progress_001",
+      "example_type": "direct_major",
+      "trigger_features": {
+        "status": "正式实施",
+        "topic_hints": ["反洗钱", "非法金融活动监测", "预警通知"],
+        "scene_hints": ["反洗钱合规场景"],
+        "paragraph2_mode": "direct",
+        "paragraph2_subtype": "with_group_progress",
+        "importance": "major"
+      },
+      "paragraph1": "4月X日，中国人民银行发布《关于加强非法金融活动监测预警工作的通知》，要求金融机构建立非法金融活动监测预警机制，明确数据报送、风险识别和处置联动要求。文件已正式实施。",
+      "paragraph2": "对平安银行、平安寿险、平安产险等持牌主体有直接影响。应开展现有反洗钱监测系统与新要求的差距评估，并补齐预警联动机制。【集团反洗钱团队已做专项解读】",
+      "notes": "落差4示范：with_group_progress写法。段尾接编辑注记【集团反洗钱团队已做专项解读】，注记与最后一个动作之间用空格分隔，不接句号。"
+    },
+    {
+      "example_id": "fs_benchmark_long_001",
+      "example_type": "benchmark_only",
+      "trigger_features": {
+        "status": "正式实施",
+        "topic_hints": ["央企内控", "内部控制体系", "国资监管"],
+        "scene_hints": [],
+        "paragraph2_mode": "benchmark",
+        "paragraph2_subtype": "benchmark_long",
+        "importance": "major"
+      },
+      "paragraph1": "3月22日，国务院国资委发布《关于做好2026年中央企业内部控制体系建设与监督工作有关事项的通知》，围绕内控体系建设目标、重点领域专项整治、监督评价机制和责任追究安排提出五大具体要求。文件已正式实施。",
+      "paragraph2": "平安集团不直接适用于此《通知》，但该文件作为央企内控工作的顶层行动指南，其所体现的监管趋势与风控导向具有显著的前瞻性。过去三年金融监管总局的内控发文在重点领域专项整治、监督评价机制等方面与国资委通知思路高度吻合。值得我们深入研究并主动对标借鉴，尤其是在内控体系建设目标设定和责任追究机制方面。",
+      "notes": "落差6示范：benchmark_long写法。仅在importance=major且涉及战略导向时使用，2-5句真分析，主语固定为'平安集团'，解释为何虽不直接适用但仍需对标。"
+    },
+    {
+      "example_id": "fs_opportunity_indicative_001",
+      "example_type": "opportunity_watch",
+      "trigger_features": {
+        "status": "正式实施",
+        "topic_hints": ["服务业扩能", "宏观产业政策", "顶层规划"],
+        "scene_hints": [],
+        "paragraph2_mode": "opportunity",
+        "paragraph2_subtype": "opportunity_indicative",
+        "importance": "minor"
+      },
+      "paragraph1": "4月X日，国务院办公厅印发《关于推进服务业扩能提质若干措施的意见》，围绕金融服务、健康养老、数字服务等重点领域提出扩能提质方向，属于宏观产业政策文件。",
+      "paragraph2": "《意见》属于宏观产业政策，对平安集团下属子公司的业务发展方向具有指引意义。平安产险可关注科技保险与绿色保险产品线拓展导向。",
+      "notes": "落差7示范：opportunity_indicative写法。语气比opportunity_watch更弱，用'具有指引意义''可关注…导向'等表述，多用于宏观产业政策类文件。"
+    },
+    {
+      "example_id": "fs_editor_note_p1_001",
+      "example_type": "benchmark_only",
+      "trigger_features": {
+        "status": "修订草案",
+        "topic_hints": ["金融法", "法律草案", "顶层立法"],
+        "scene_hints": [],
+        "paragraph2_mode": "none",
+        "importance": "major"
+      },
+      "paragraph1": "3月22日，国务院常务会议审议通过《中华人民共和国金融法（草案）》，草案围绕金融监管体制、金融稳定机制、金融消费者保护和金融违法处置等方面作出顶层制度安排，当前处于草案阶段。【正在组织开展专题解读】",
+      "paragraph2": "",
+      "notes": "落差4示范：paragraph2_mode=none时，编辑注记放在paragraph1末尾。注记与最后一句之间用空格分隔，不接句号。"
+    },
+    {
+      "example_id": "fs_with_quantified_impact_001",
+      "example_type": "direct_major",
+      "trigger_features": {
+        "status": "征求意见稿",
+        "topic_hints": ["融资租赁", "地方监管", "上海监管"],
+        "scene_hints": ["融资租赁业务场景"],
+        "paragraph2_mode": "direct",
+        "paragraph2_subtype": "with_quantified_impact",
+        "importance": "major"
+      },
+      "paragraph1": "4月X日，上海市地方金融管理局就《上海市融资租赁公司监督管理办法（征求意见稿）》公开征求意见，围绕注册资本要求、业务范围限制、关联交易管理和信息报送义务等提出规范要求，意见反馈截止时间为X月X日。",
+      "paragraph2": "对平安租赁有直接影响，将影响其在上海注册主体约23.9%的高息存量业务。平安信托、平安资本正在组织相关人员开展《办法》对业务影响的差距分析。",
+      "notes": "落差7示范：with_quantified_impact写法。用具体百分比量化受影响业务规模，并体现集团已开展工作。"
+    },
+    {
+      "example_id": "fs_transition_period_001",
+      "example_type": "direct_major",
+      "trigger_features": {
+        "status": "征求意见稿",
+        "topic_hints": ["期货监管", "行政许可", "子公司业务边界", "过渡期"],
+        "scene_hints": ["期货经营边界场景"],
+        "paragraph2_mode": "direct",
+        "paragraph2_subtype": "single_entity_single_action",
+        "importance": "major"
+      },
+      "paragraph1": "2026年4月17日，中国证监会就《期货公司监督管理办法（征求意见稿）》及配套实施规定公开征求意见，本次修订核心变化在于将期货做市交易、衍生品交易业务的管理由子公司上升至期货公司持牌经营并实施行政许可管理，通过限制不同类型业务的最低注册资本显著提高业务准入门槛，并强化了股东行为禁区及穿透监管等内容，配套实施规定对子公司存量业务回归给予18个月过渡期。意见反馈截止日为2026年5月17日。",
+      "paragraph2": "《办法》对平安期货构成直接影响，平安期货需在18个月过渡期内，将目前由风险管理子公司开展的场外衍生品交易业务有序回归母公司，并重新申请行政许可准入，需对照新的资本门槛评估资本充足状况。",
+      "notes": "落差P1示范：有具体过渡期时限的写法。P1要把'由子公司上升至期货公司持牌经营'这个核心制度变化写清楚，P2要写出具体过渡期限制和具体业务路径，不只写'开展评估'。"
+    },
+    {
+      "example_id": "fs_multi_constraint_direct_001",
+      "example_type": "direct_major",
+      "trigger_features": {
+        "status": "正式实施",
+        "topic_hints": ["基金绩效考核", "薪酬递延", "基金管理人", "中长期考核"],
+        "scene_hints": ["资管业务合规场景", "基金管理场景"],
+        "paragraph2_mode": "direct",
+        "paragraph2_subtype": "single_entity_single_action",
+        "importance": "major"
+      },
+      "paragraph1": "2026年4月17日，中国证券投资基金业协会修订发布《基金管理公司绩效考核管理指引》，建立以基金投资收益为核心的考核体系，要求三年以上中长期指标权重不低于80%；提高关键岗位绩效薪酬递延和高管、基金经理强制跟投比例；建立基金经理绩效薪酬阶梯奖惩机制，并首次将基金利润率、盈利投资者占比等投资者盈亏指标纳入考核体系，要求核心销售人员考核投资者盈亏指标权重不低于50%；明确股东分红与基金业绩绑定。《指引》自发布之日起实施。",
+      "paragraph2": "《指引》适用于境内公募基金管理人，对平安基金构成直接合规约束，需对照新规完成绩效考核制度修订、薪酬递延及跟投方案调整。同时，指引明确股东分红与投资者利益绑定，平安集团作为股东方治理决策也将产生约束效应。",
+      "notes": "落差P1示范：多层次数字约束型写法。P1列出'中长期80%''盈亏指标50%''阶梯奖惩'等关键数字和新机制。P2要区分对基金管理人的直接约束（平安基金）和对股东的穿透约束（平安集团），不只写单一主体。"
+    }
+  ]
+}

@@ -1,0 +1,356 @@
+{
+  "version": "1.2",
+  "basis": "基于附件版 action_templates.json 修订定稿，兼容轻量版周报生成逻辑、修订版 topic_families/scene_families 与历史业务终稿动作表达",
+  "action_templates": {
+    "rule_mapping_and_revision": {
+      "label": "规则映射与制度修订",
+      "template": "应开展监管要求与现有制度的差距映射。",
+      "applicable_statuses": ["正式实施", "征求意见稿", "修订草案", "专项行动"],
+      "strength": "medium",
+      "applicable_topic_families": ["internal_control_and_integrity", "listed_company_governance", "personal_information_and_data_governance"],
+      "applicable_scene_families": ["group_control_penetration_scene", "listed_company_secretary_scene", "customer_touchpoint_data_scene"],
+      "applicable_entities": ["集团合规部", "集团科技条线", "集团财务部", "平安银行", "平安证券"],
+      "style_hint": "用于集团治理、规则映射、披露链路类场景；不要和多个整改动作并列。"
+    },
+    "process_boundary_alignment": {
+      "label": "流程边界梳理",
+      "template": "应梳理相关流程边界并完成口径对齐。",
+      "applicable_statuses": ["正式实施", "征求意见稿", "修订草案"],
+      "strength": "medium",
+      "applicable_topic_families": ["cross_border_finance", "futures_license_and_boundary", "capital_market_reform"],
+      "applicable_scene_families": ["bank_cross_border_credit_scene", "futures_operating_boundary_scene", "investment_bank_deal_scene"],
+      "applicable_entities": ["平安银行对公业务", "平安银行", "平安期货", "平安证券投行业务"],
+      "style_hint": "适用于边界、流程、衔接口径调整类场景。"
+    },
+    "data_permission_chain_review": {
+      "label": "数据权限链路排查",
+      "template": "应排查数据采集、标签画像、模型调用和外部共享链路。",
+      "applicable_statuses": ["正式实施", "专项行动", "征求意见稿"],
+      "strength": "medium",
+      "applicable_topic_families": ["personal_information_and_data_governance", "ai_model_and_interaction_governance"],
+      "applicable_scene_families": ["customer_touchpoint_data_scene", "ai_interaction_scene"],
+      "applicable_entities": ["集团科技条线", "集团合规部", "集团消保团队", "平安银行", "平安医疗健康板块"],
+      "style_hint": "适用于个人信息保护、数据治理、专项整治类场景。"
+    },
+    "sdk_and_external_sharing_review": {
+      "label": "SDK与外部共享链路审查",
+      "template": "应排查SDK接入和第三方数据共享链路。",
+      "applicable_statuses": ["正式实施", "征求意见稿", "修订草案"],
+      "strength": "medium",
+      "applicable_topic_families": ["personal_information_and_data_governance", "ai_model_and_interaction_governance"],
+      "applicable_scene_families": ["customer_touchpoint_data_scene", "ai_interaction_scene"],
+      "applicable_entities": ["集团科技条线", "集团合规部", "平安银行", "平安医疗健康板块"],
+      "style_hint": "用于 SDK、外部共享、联网产品、数据出境等相关场景。"
+    },
+    "cross_border_rule_assessment": {
+      "label": "跨境规则评估",
+      "template": "应评估跨境贷款额度管理和间接授信边界。",
+      "applicable_statuses": ["正式实施", "征求意见稿", "修订草案"],
+      "strength": "medium",
+      "applicable_topic_families": ["cross_border_finance"],
+      "applicable_scene_families": ["bank_cross_border_credit_scene"],
+      "applicable_entities": ["平安银行对公业务", "平安银行", "平安租赁"],
+      "style_hint": "优先用于跨境金融、境外贷款、跨境同业融资场景。"
+    },
+    "overseas_risk_identification": {
+      "label": "境外合规风险识别",
+      "template": "应补齐境外合规风险识别和应对机制。",
+      "applicable_statuses": ["正式实施", "对标适用", "标题级分析"],
+      "strength": "soft",
+      "applicable_topic_families": ["overseas_legal_risk", "cross_border_finance"],
+      "applicable_scene_families": ["overseas_legal_risk_scene", "bank_cross_border_credit_scene"],
+      "applicable_entities": ["集团合规部", "平安银行对公业务", "集团财务部"],
+      "style_hint": "适用于涉外法律、域外管辖和对标类场景；不要写成强整改。"
+    },
+    "display_and_prompt_adjustment": {
+      "label": "展示与提示口径调整",
+      "template": "应调整展示口径和对客提示。",
+      "applicable_statuses": ["正式实施", "征求意见稿", "修订草案"],
+      "strength": "medium",
+      "applicable_topic_families": ["consumer_protection_and_marketing", "securities_trading_control"],
+      "applicable_scene_families": ["digital_marketing_and_platform_scene", "customer_disclosure_scene", "securities_terminal_and_order_scene"],
+      "applicable_entities": ["平安银行零售业务", "壹钱包", "平安证券交易与经纪", "集团消保团队", "平安寿险"],
+      "style_hint": "适用于收银台展示、客户提示、对客披露、终端展示类场景。"
+    },
+    "third_party_platform_review": {
+      "label": "第三方平台合作审查",
+      "template": "应重新审查与第三方平台的合作边界。",
+      "applicable_statuses": ["正式实施", "征求意见稿", "修订草案"],
+      "strength": "medium",
+      "applicable_topic_families": ["consumer_protection_and_marketing", "insurance_product_governance"],
+      "applicable_scene_families": ["digital_marketing_and_platform_scene"],
+      "applicable_entities": ["平安银行零售业务", "壹钱包", "平安寿险", "平安产险"],
+      "style_hint": "适用于平台导流、直播展业、合作页面和账号矩阵治理。"
+    },
+    "marketing_matrix_cleanup": {
+      "label": "营销矩阵清理",
+      "template": "应清理营销矩阵中不合规的账号和展示口径。",
+      "applicable_statuses": ["正式实施", "专项行动"],
+      "strength": "strong",
+      "applicable_topic_families": ["consumer_protection_and_marketing"],
+      "applicable_scene_families": ["digital_marketing_and_platform_scene"],
+      "applicable_entities": ["平安银行零售业务", "平安寿险", "平安产险"],
+      "style_hint": "用于直播、短视频、个人账号、持牌展示不规范等正式治理场景。"
+    },
+    "product_review_and_refiling": {
+      "label": "产品回溯与重新备案",
+      "template": "应开展存量产品回溯。",
+      "applicable_statuses": ["正式实施", "专项行动"],
+      "strength": "strong",
+      "applicable_topic_families": ["insurance_product_governance"],
+      "applicable_scene_families": ["insurance_product_design_scene"],
+      "applicable_entities": ["平安寿险", "平安健康险", "平安养老险", "平安产险"],
+      "style_hint": "适用于保险产品负面清单、条款治理、责任边界收紧等正式监管场景。"
+    },
+    "sales_and_clause_alignment": {
+      "label": "销售话术与条款对齐",
+      "template": "应统一条款、销售话术与备案前复核口径。",
+      "applicable_statuses": ["正式实施", "征求意见稿", "修订草案"],
+      "strength": "medium",
+      "applicable_topic_families": ["insurance_product_governance"],
+      "applicable_scene_families": ["insurance_product_design_scene", "digital_marketing_and_platform_scene"],
+      "applicable_entities": ["平安寿险", "平安健康险", "平安养老险", "平安产险"],
+      "style_hint": "适用于产品条款、展业资质、平台销售和直播营销衔接场景。"
+    },
+    "suitability_review": {
+      "label": "适当性管理审查",
+      "template": "应梳理适当性管理与对客披露衔接机制。",
+      "applicable_statuses": ["正式实施", "征求意见稿", "修订草案"],
+      "strength": "medium",
+      "applicable_topic_families": ["consumer_protection_and_marketing"],
+      "applicable_scene_families": ["customer_disclosure_scene"],
+      "applicable_entities": ["平安银行零售业务", "集团消保团队"],
+      "style_hint": "适用于综合融资成本明示、适当性告知、客户披露衔接。"
+    },
+    "trading_parameter_switch": {
+      "label": "交易参数切换",
+      "template": "应提前切换交易参数。",
+      "applicable_statuses": ["正式实施", "专项行动"],
+      "strength": "strong",
+      "applicable_topic_families": ["securities_trading_control"],
+      "applicable_scene_families": ["securities_terminal_and_order_scene"],
+      "applicable_entities": ["平安证券交易与经纪"],
+      "style_hint": "交易规则类场景优先动作，适合高管周报第二段。"
+    },
+    "disclosure_chain_review": {
+      "label": "信息披露链路审查",
+      "template": "应复核信息披露链路和合规留痕安排。",
+      "applicable_statuses": ["正式实施", "征求意见稿"],
+      "strength": "medium",
+      "applicable_topic_families": ["listed_company_governance", "capital_market_reform"],
+      "applicable_scene_families": ["listed_company_secretary_scene", "investment_bank_deal_scene", "customer_disclosure_scene"],
+      "applicable_entities": ["平安证券", "平安证券投行业务", "集团合规部"],
+      "style_hint": "适用于董秘治理、披露链路、投行业务信息披露衔接场景。"
+    },
+    "secretary_governance_review": {
+      "label": "董秘治理审查",
+      "template": "应梳理董秘履职核查和审计委员会配合机制。",
+      "applicable_statuses": ["正式实施", "征求意见稿"],
+      "strength": "medium",
+      "applicable_topic_families": ["listed_company_governance"],
+      "applicable_scene_families": ["listed_company_secretary_scene"],
+      "applicable_entities": ["平安证券", "平安证券投行业务", "集团合规部"],
+      "style_hint": "适用于董秘监管、短线交易、信息披露治理规则。"
+    },
+    "license_capital_gap_assessment": {
+      "label": "许可与资本差距评估",
+      "template": "应开展存量业务回归路径和资本充足性差距评估。",
+      "applicable_statuses": ["正式实施", "征求意见稿", "修订草案"],
+      "strength": "medium",
+      "applicable_topic_families": ["futures_license_and_boundary"],
+      "applicable_scene_families": ["futures_operating_boundary_scene"],
+      "applicable_entities": ["平安期货"],
+      "style_hint": "期货监管核心动作，优先于泛制度修订。"
+    },
+    "operating_boundary_adjustment": {
+      "label": "经营边界调整",
+      "template": "应梳理牌照范围与子公司业务边界调整方案。",
+      "applicable_statuses": ["正式实施", "征求意见稿", "修订草案"],
+      "strength": "medium",
+      "applicable_topic_families": ["futures_license_and_boundary"],
+      "applicable_scene_families": ["futures_operating_boundary_scene"],
+      "applicable_entities": ["平安期货"],
+      "style_hint": "用于期货经营边界、业务回归、许可事项调整类场景。"
+    },
+    "local_rule_mapping": {
+      "label": "地方实施细则映射",
+      "template": "应优先做地方实施细则映射。",
+      "applicable_statuses": ["正式实施", "征求意见稿", "计划"],
+      "strength": "medium",
+      "applicable_topic_families": ["medical_service_collaboration"],
+      "applicable_scene_families": ["medical_service_payment_scene"],
+      "applicable_entities": ["平安医疗健康板块", "平安健康险", "平安养老险", "平安寿险"],
+      "style_hint": "分级诊疗、长护险、地方差异化实施类政策优先动作。"
+    },
+    "service_payment_model_assessment": {
+      "label": "服务支付模式评估",
+      "template": "应评估健康服务合作和支付衔接模式调整。",
+      "applicable_statuses": ["正式实施", "征求意见稿", "计划"],
+      "strength": "medium",
+      "applicable_topic_families": ["medical_service_collaboration", "insurance_product_governance"],
+      "applicable_scene_families": ["medical_service_payment_scene", "insurance_product_design_scene"],
+      "applicable_entities": ["平安医疗健康板块", "平安健康险", "平安养老险"],
+      "style_hint": "适用于健康服务网络、支付衔接、慢病管理类场景。"
+    },
+    "ai_governance_integration": {
+      "label": "AI治理机制嵌入",
+      "template": "应将相关场景纳入现有AI治理框架。",
+      "applicable_statuses": ["正式实施", "征求意见稿", "修订草案"],
+      "strength": "medium",
+      "applicable_topic_families": ["ai_model_and_interaction_governance"],
+      "applicable_scene_families": ["ai_interaction_scene", "group_control_penetration_scene"],
+      "applicable_entities": ["集团科技条线", "集团合规部", "集团消保团队"],
+      "style_hint": "适用于集团统一治理口径，偏穿透治理表达。"
+    },
+    "human_override_setup": {
+      "label": "人工干预机制建立",
+      "template": "应盘点拟人化互动场景并建立人工干预机制。",
+      "applicable_statuses": ["正式实施", "征求意见稿", "修订草案"],
+      "strength": "medium",
+      "applicable_topic_families": ["ai_model_and_interaction_governance"],
+      "applicable_scene_families": ["ai_interaction_scene"],
+      "applicable_entities": ["集团科技条线", "平安银行", "平安医疗健康板块"],
+      "style_hint": "拟人化互动、数字虚拟人、AI客服类场景优先动作。"
+    },
+    "training_data_gap_analysis": {
+      "label": "训练数据合规差距分析",
+      "template": "应开展训练数据和模型调用留痕差距分析。",
+      "applicable_statuses": ["征求意见稿", "修订草案", "计划"],
+      "strength": "medium",
+      "applicable_topic_families": ["ai_model_and_interaction_governance", "personal_information_and_data_governance"],
+      "applicable_scene_families": ["ai_interaction_scene", "customer_touchpoint_data_scene"],
+      "applicable_entities": ["集团科技条线", "平安基金", "平安银行"],
+      "style_hint": "适用于尚未正式实施的 AI 治理或数据治理规则。"
+    },
+    "control_embedding_and_review": {
+      "label": "内控嵌入与审查",
+      "template": "应将相关要求嵌入现有内控机制。",
+      "applicable_statuses": ["正式实施", "专项行动"],
+      "strength": "medium",
+      "applicable_topic_families": ["internal_control_and_integrity", "personal_information_and_data_governance"],
+      "applicable_scene_families": ["group_control_penetration_scene"],
+      "applicable_entities": ["集团合规部", "集团科技条线", "集团财务部"],
+      "style_hint": "适用于集团穿透治理、内控监督、统一管控类场景。"
+    },
+    "unified_caliber_coordination": {
+      "label": "集团统一口径协调",
+      "template": "应由合规、科技、业务统一牵头开展全链条排查。",
+      "applicable_statuses": ["正式实施", "专项行动"],
+      "strength": "strong",
+      "applicable_topic_families": ["internal_control_and_integrity", "personal_information_and_data_governance", "ai_model_and_interaction_governance"],
+      "applicable_scene_families": ["group_control_penetration_scene"],
+      "applicable_entities": ["集团合规部", "集团科技条线", "集团消保团队"],
+      "style_hint": "仅用于集团统一牵头类正式治理事项，不用于普通 benchmark 文件。"
+    },
+    "market_opportunity_assessment": {
+      "label": "市场机会评估",
+      "template": "可关注相关规则变化带来的业务机会。",
+      "applicable_statuses": ["正式实施", "征求意见稿", "计划"],
+      "strength": "soft",
+      "applicable_topic_families": ["capital_market_reform", "medical_service_collaboration", "macro_policy_and_planning"],
+      "applicable_scene_families": ["investment_bank_deal_scene", "capital_market_allocation_scene", "medical_service_payment_scene"],
+      "applicable_entities": ["平安证券投行业务", "平安养老险", "平安寿险", "平安资管", "平安基金", "平安资本", "平安医疗健康板块"],
+      "style_hint": "机会项专用，不得和整改动作并列。"
+    },
+    "rating_gap_assessment": {
+      "label": "监管评级差距评估",
+      "template": "应开展监管评级差距评估。",
+      "applicable_statuses": ["正式实施"],
+      "strength": "medium",
+      "applicable_topic_families": ["internal_control_and_integrity"],
+      "applicable_scene_families": ["group_control_penetration_scene"],
+      "applicable_entities": ["平安理财", "平安银行", "集团合规部"],
+      "style_hint": "用于监管评级或分类管理要求明确的场景。"
+    },
+    "cross_border_process_review": {
+      "label": "跨境流程审查",
+      "template": "应梳理跨境授信流程口径。",
+      "applicable_statuses": ["正式实施", "征求意见稿", "修订草案"],
+      "strength": "medium",
+      "applicable_topic_families": ["cross_border_finance"],
+      "applicable_scene_families": ["bank_cross_border_credit_scene"],
+      "applicable_entities": ["平安银行对公业务", "平安银行"],
+      "style_hint": "适用于跨境授信、境外放款、流程衔接类场景。"
+    },
+    "credit_boundary_alignment": {
+      "label": "授信边界对齐",
+      "template": "应评估间接授信边界并完成口径对齐。",
+      "applicable_statuses": ["正式实施", "征求意见稿"],
+      "strength": "medium",
+      "applicable_topic_families": ["cross_border_finance"],
+      "applicable_scene_families": ["bank_cross_border_credit_scene"],
+      "applicable_entities": ["平安银行对公业务", "平安银行"],
+      "style_hint": "适用于间接贷款、授信边界、风险口径调整类场景。"
+    }
+  },
+  "by_entity_examples": {
+    "平安银行": [
+      "梳理跨境授信流程口径",
+      "评估跨境贷款额度管理和间接授信边界",
+      "排查数据采集、标签画像、模型调用和外部共享链路"
+    ],
+    "平安银行零售业务": [
+      "调整支付工具与贷款产品区隔展示",
+      "清理营销矩阵中不合规的账号和展示口径",
+      "优化对客提示口径和适当性告知"
+    ],
+    "壹钱包": [
+      "调整支付工具与贷款产品区隔展示",
+      "重新审查与第三方平台的合作边界"
+    ],
+    "平安寿险": [
+      "开展存量产品回溯",
+      "统一条款、销售话术与备案前复核口径"
+    ],
+    "平安健康险": [
+      "开展存量产品回溯",
+      "评估健康服务合作和支付衔接模式调整"
+    ],
+    "平安养老险": [
+      "做地方实施细则映射",
+      "评估健康服务合作和支付衔接模式调整",
+      "可关注相关规则变化带来的业务机会"
+    ],
+    "平安产险": [
+      "开展存量产品回溯",
+      "重新审查与第三方平台的合作边界"
+    ],
+    "平安证券交易与经纪": [
+      "提前切换交易参数",
+      "升级终端展示、订单校验和风控阈值",
+      "调整展示口径和对客提示"
+    ],
+    "平安证券投行业务": [
+      "评估项目扩容带来的承做与储备机会",
+      "复核信息披露链路和合规留痕安排"
+    ],
+    "平安期货": [
+      "开展存量业务回归路径和资本充足性差距评估",
+      "梳理牌照范围与子公司业务边界调整方案"
+    ],
+    "平安医疗健康板块": [
+      "优先做地方实施细则映射",
+      "评估健康服务合作和支付衔接模式调整",
+      "盘点拟人化互动场景并建立人工干预机制"
+    ],
+    "集团科技条线": [
+      "排查数据采集、标签画像、模型调用和外部共享链路",
+      "排查SDK接入和第三方数据共享链路",
+      "将相关场景纳入现有AI治理框架",
+      "盘点拟人化互动场景并建立人工干预机制"
+    ],
+    "集团合规部": [
+      "开展监管要求与现有制度的差距映射",
+      "应由合规、科技、业务统一牵头开展全链条排查",
+      "补齐境外合规风险识别和应对机制"
+    ],
+    "集团消保团队": [
+      "优化对客提示口径和适当性告知",
+      "应由合规、科技、业务统一牵头开展全链条排查"
+    ],
+    "集团财务部": [
+      "开展监管要求与现有制度的差距映射",
+      "补齐境外合规风险识别和应对机制"
+    ]
+  }
+}

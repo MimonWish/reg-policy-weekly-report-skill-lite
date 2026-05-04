@@ -1,0 +1,264 @@
+{
+  "version": "1.0",
+  "basis": "基于当前轻量版周报生成逻辑与历史业务终稿沉淀的首版禁写库",
+  "items": [
+    {
+      "id": "fe_cross_001",
+      "pattern": "存量客户承诺书补签",
+      "type": "cross_item_pollution",
+      "reason": "该表述只适用于期货公司接入外部信息系统或类似外部系统管理场景，不应串入证券法律适用意见、基金绩效考核、境外贷款等其他政策。"
+    },
+    {
+      "id": "fe_cross_002",
+      "pattern": "制度建设、系统隔离及存量客户承诺书补签",
+      "type": "cross_item_pollution",
+      "reason": "这是特定期货外部系统接入规则的动作组合，不可被泛化套用到其他期货监管、证券监管或综合类政策。"
+    },
+    {
+      "id": "fe_cross_003",
+      "pattern": "外部信息系统接入",
+      "type": "cross_item_pollution",
+      "reason": "仅在外部系统接入或交易接入类政策中可出现，不应在法律适用意见、基金薪酬、跨境贷款、域外管辖等政策中扩写。"
+    },
+    {
+      "id": "fe_cross_004",
+      "pattern": "子公司存量业务回归",
+      "type": "wrong_fact",
+      "reason": "该事实仅适用于期货公司监督管理办法及配套实施安排，不得扩展到其他证监会规则、基金业自律规则或证券法律适用意见。"
+    },
+    {
+      "id": "fe_cross_005",
+      "pattern": "重新申请行政许可准入",
+      "type": "wrong_fact",
+      "reason": "仅在明确涉及许可事项调整的期货监管场景可使用，不应作为通用动作写入其他资本市场或银行类政策。"
+    },
+    {
+      "id": "fe_cross_006",
+      "pattern": "18个月过渡期",
+      "type": "wrong_fact",
+      "reason": "该期限是特定期货监管文件的专属过渡安排，不能被带入其他政策条目。"
+    },
+    {
+      "id": "fe_entity_001",
+      "pattern": "对平安期货有直接影响",
+      "type": "wrong_entity",
+      "reason": "若当前政策事实卡未将平安期货列入 allowed_paragraph2_entities，则该主体表述一律视为错误主体。重点防止将证券、基金、银行政策误落到平安期货。"
+    },
+    {
+      "id": "fe_entity_002",
+      "pattern": "对平安证券投行业务有直接影响",
+      "type": "wrong_entity",
+      "reason": "若当前政策属于银行、保险、医疗、数据治理或域外法治类文件，且事实卡未指向平安证券投行业务，则该表述视为错误主体。"
+    },
+    {
+      "id": "fe_entity_003",
+      "pattern": "对平安医疗健康板块有直接影响",
+      "type": "wrong_entity",
+      "reason": "若当前政策不涉及分级诊疗、医疗服务协同、健康数据、养老服务、导诊问诊等场景，则不应机械套用医疗健康主体。"
+    },
+    {
+      "id": "fe_entity_004",
+      "pattern": "对集团科技条线有直接影响",
+      "type": "wrong_entity",
+      "reason": "集团科技条线只应出现在数据治理、AI伦理、模型治理、科技风控、拟人化互动、网络标识等场景，不得泛化套用。"
+    },
+    {
+      "id": "fe_action_001",
+      "pattern": "应立即整改",
+      "type": "wrong_action",
+      "reason": "征求意见稿、修订草案、计划类文件不得使用强整改动作。"
+    },
+    {
+      "id": "fe_action_002",
+      "pattern": "应立即执行",
+      "type": "wrong_action",
+      "reason": "对征求意见稿、草案、计划、对标适用类文件，禁止使用立即执行类动作。"
+    },
+    {
+      "id": "fe_action_003",
+      "pattern": "应立即开展专项排查",
+      "type": "wrong_action",
+      "reason": "仅限正式实施或专项行动类文件；对征求意见稿、benchmark、机会项禁止使用。"
+    },
+    {
+      "id": "fe_action_004",
+      "pattern": "应全面修订制度和系统",
+      "type": "wrong_action",
+      "reason": "该动作过强且过泛，不适合作为轻量版第二段默认动作，除非事实卡明确允许。"
+    },
+    {
+      "id": "fe_action_005",
+      "pattern": "应全面专项排查",
+      "type": "wrong_action",
+      "reason": "benchmark_only 和 opportunity_watch 禁止出现全面专项排查类表达。"
+    },
+    {
+      "id": "fe_action_006",
+      "pattern": "应统一集团口径并立即完成系统改造",
+      "type": "wrong_action",
+      "reason": "该类组合动作过重，不适用于轻量版单条第二段，只能保留一个主动作。"
+    },
+    {
+      "id": "fe_benchmark_001",
+      "pattern": "平安集团不直接适用该文件，但应立即开展专项排查",
+      "type": "over_expansion",
+      "reason": "benchmark 项只能保留克制的对标表达，不能扩成强整改动作。"
+    },
+    {
+      "id": "fe_benchmark_002",
+      "pattern": "平安集团不直接适用该文件，但应全面修订制度、系统和流程",
+      "type": "over_expansion",
+      "reason": "benchmark_only 默认只允许一句对标口径，不允许长串整改动作。"
+    },
+    {
+      "id": "fe_benchmark_003",
+      "pattern": "平安集团不直接适用该文件，但需高度重视并持续关注",
+      "type": "over_expansion",
+      "reason": "benchmark 项禁止空泛套话。"
+    },
+    {
+      "id": "fe_opportunity_001",
+      "pattern": "可关注XXX机会，应立即整改",
+      "type": "wrong_action",
+      "reason": "机会项不得和整改动作并列。"
+    },
+    {
+      "id": "fe_opportunity_002",
+      "pattern": "或将受益于XXX，应尽快修订制度",
+      "type": "wrong_action",
+      "reason": "机会项只能写机会，不得写整改。"
+    },
+    {
+      "id": "fe_opportunity_003",
+      "pattern": "可关注XXX机会并开展专项排查",
+      "type": "wrong_action",
+      "reason": "机会项不能附带强动作。"
+    },
+    {
+      "id": "fe_fact_001",
+      "pattern": "杠杆率由0.5提升至1.5",
+      "type": "wrong_fact",
+      "reason": "该数字事实只可出现在明确涉及境外贷款/跨境同业融资等对应政策的 paragraph1 中，其他条目出现即视为事实越界。"
+    },
+    {
+      "id": "fe_fact_002",
+      "pattern": "最低持股比例原则上不低于发行后总股本的5%",
+      "type": "wrong_fact",
+      "reason": "该事实只适用于证券期货法律适用意见第18号相关政策，不得移植到其他资本市场或基金规则条目。"
+    },
+    {
+      "id": "fe_fact_003",
+      "pattern": "基金投资收益指标中三年以上中长期指标权重不低于80%",
+      "type": "wrong_fact",
+      "reason": "该量化要求仅适用于基金管理公司绩效考核指引，不能外溢到证券公司薪酬、银行绩效或保险考核类政策。"
+    },
+    {
+      "id": "fe_fact_004",
+      "pattern": "递延支付起付年不早于T+2年",
+      "type": "wrong_fact",
+      "reason": "该表述仅适用于证券公司稳健薪酬制度指引，不应在基金、保险或一般治理条目中扩写。"
+    },
+    {
+      "id": "fe_fact_005",
+      "pattern": "支付工具与贷款产品区隔展示",
+      "type": "wrong_fact",
+      "reason": "该表述只适用于金融产品网络营销/消保/展示区隔类政策，不得用于跨境金融、期货监管、行政复议等无关条目。"
+    },
+    {
+      "id": "fe_fact_006",
+      "pattern": "机构持牌、人员持证",
+      "type": "wrong_fact",
+      "reason": "该表述只适用于网络营销、直播短视频营销等渠道合规场景，不得泛化到其他类别政策。"
+    },
+    {
+      "id": "fe_fact_007",
+      "pattern": "基层首诊、双向转诊、资源共享和医保支付协同",
+      "type": "wrong_fact",
+      "reason": "这是分级诊疗类政策专属事实，不得写入其他医疗数据、AI、网络标识或宏观服务业政策。"
+    },
+    {
+      "id": "fe_focus_001",
+      "pattern": "健康服务合作、保险支付衔接和慢病管理",
+      "type": "over_expansion",
+      "reason": "该业务落点短语只应出现在分级诊疗、医疗服务协同、长护险衔接等相关场景，不得泛化到所有医疗或养老政策。"
+    },
+    {
+      "id": "fe_focus_002",
+      "pattern": "终端展示、订单校验、风控阈值和客户提示",
+      "type": "over_expansion",
+      "reason": "该业务落点短语主要适用于交易规则、终端参数、撮合机制变化场景，不应写入一般证券治理或投行业务规则。"
+    },
+    {
+      "id": "fe_focus_003",
+      "pattern": "线上服务、数字员工、导诊陪伴场景",
+      "type": "over_expansion",
+      "reason": "该业务落点短语只适用于拟人化互动、数字虚拟人、AI客服等场景，不应套用到一般数据治理或网络安全文件。"
+    },
+    {
+      "id": "fe_focus_004",
+      "pattern": "跨境贷款额度管理和间接授信边界",
+      "type": "over_expansion",
+      "reason": "该业务落点短语只适用于境外贷款、跨境融资、跨境同业融资等政策，不应迁移到其他银行、证券或保险条目。"
+    },
+    {
+      "id": "fe_phrase_001",
+      "pattern": "该政策体现了",
+      "type": "over_expansion",
+      "reason": "终稿禁用空泛评价句。"
+    },
+    {
+      "id": "fe_phrase_002",
+      "pattern": "该文件反映出",
+      "type": "over_expansion",
+      "reason": "终稿禁用空泛评价句。"
+    },
+    {
+      "id": "fe_phrase_003",
+      "pattern": "这意味着",
+      "type": "over_expansion",
+      "reason": "终稿禁用推断性套话。"
+    },
+    {
+      "id": "fe_phrase_004",
+      "pattern": "从长期看",
+      "type": "over_expansion",
+      "reason": "终稿禁用宏观趋势铺陈。"
+    },
+    {
+      "id": "fe_phrase_005",
+      "pattern": "从宏观层面看",
+      "type": "over_expansion",
+      "reason": "终稿禁用宏观背景铺垫。"
+    },
+    {
+      "id": "fe_phrase_006",
+      "pattern": "有助于",
+      "type": "over_expansion",
+      "reason": "终稿禁用政策意义拔高。"
+    },
+    {
+      "id": "fe_phrase_007",
+      "pattern": "进一步彰显",
+      "type": "over_expansion",
+      "reason": "终稿禁用政策宣传腔。"
+    },
+    {
+      "id": "fe_phrase_008",
+      "pattern": "要高度重视",
+      "type": "over_expansion",
+      "reason": "终稿禁用套话。"
+    },
+    {
+      "id": "fe_phrase_009",
+      "pattern": "要认真学习领会",
+      "type": "over_expansion",
+      "reason": "终稿禁用套话。"
+    },
+    {
+      "id": "fe_phrase_010",
+      "pattern": "要持续关注",
+      "type": "over_expansion",
+      "reason": "终稿禁用无动作价值的空泛提醒。"
+    }
+  ]
+}

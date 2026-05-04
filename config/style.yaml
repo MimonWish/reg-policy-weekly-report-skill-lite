@@ -1,0 +1,325 @@
+version: "1.0"
+report_title: "监管政策周报"
+
+document_style:
+  title:
+    font_color: "black"
+    bold: true
+    underline: false
+    highlight: false
+    alignment: "center"
+    size_hint: "large"
+  body:
+    font_color: "black"
+    alignment: "left"
+    line_spacing: 1.35
+    paragraph_spacing_after: 6
+    first_line_indent: 0
+
+paragraph_style_rules:
+  paragraph1:
+    role: "政策摘要段"
+    tone:
+      - "政策信息优先"
+      - "事实密集"
+      - "不带动作口吻"
+      - "不写平安主体"
+    structure:
+      - "发布日期"
+      - "发文机构"
+      - "文件名称"
+      - "文件性质或定位"
+      - "2-4个核心制度变化"
+      - "生效时间/截止时间/当前状态"
+    sentence_rules:
+      min_sentences: 2
+      max_sentences_major: 8
+      max_sentences_minor: 4
+      preferred_length: "短句为主"
+      avoid:
+        - "长复句连续堆叠"
+        - "政策意义拔高"
+        - "宏观背景铺垫"
+    forbidden_content:
+      - "对平安XXX有直接影响"
+      - "应XXX"
+      - "平安集团不直接适用"
+      - "宏观趋势分析"
+      - "空泛评价"
+
+  paragraph2:
+    role: "平安影响段"
+    tone:
+      - "业务判断优先"
+      - "动作短促"
+      - "主体明确"
+      - "不展开背景"
+    structure:
+      - "受影响主体"
+      - "可选业务落点短语"
+      - "最关键动作"
+    sentence_rules:
+      min_sentences: 0
+      max_sentences: 6
+      preferred_length: "按 paragraph2_mode 分级"
+      avoid:
+        - "多主体动作糊在一句内（应用分号切分）"
+        - "重复政策摘要"
+        - "机械铺开所有公司"
+    forbidden_content:
+      - "宏观意义"
+      - "行业趋势"
+      - "空话套话"
+
+preferred_openers:
+  paragraph1:
+    - "X月X日，X部门发布《XXXX》。"
+    - "X月X日，X部门印发《XXXX》。"
+    - "X月X日，X部门就《XXXX》公开征求意见。"
+    - "X月X日，X部门公布《XXXX》。"
+    - "X月X日，X部门联合发布《XXXX》。"
+    - "X月X日，X部门修订发布《XXXX》。"
+    - "X月X日，国务院常务会议审议通过《XXXX》。"
+    - "X月X日，X部门下发《XXXX》。"
+  paragraph2_direct:
+    - "对平安XXX有直接影响。"
+  paragraph2_scene_direct_related:
+    - "对平安XXX有直接影响，后续将改变XXX场景。"
+  paragraph2_benchmark:
+    - "平安集团不直接适用该文件，但应对标其核心要求，优先补齐XXX。"
+  paragraph2_opportunity:
+    - "平安XXX可关注XXX机会。"
+
+emphasis_rules:
+  title:
+    allow_emphasis: false
+  paragraph1:
+    allow_emphasis: true
+    emphasis_targets:
+      - "核心制度变化短语"
+      - "生效/截止/征求意见稿/正式实施等状态短语"
+      - "关键数字、阈值、期限"
+  paragraph2:
+    allow_emphasis: true
+    emphasis_targets:
+      - "对平安XXX有直接影响"
+      - "最关键动作短语"
+      - "最短业务落点短语"
+
+highlight_rules:
+  enabled: true
+  color: "red"
+  strict_mode: true
+  title_highlight: false
+  max_highlight_segments_per_item: 8
+  paragraph1:
+    max_segments: 6
+    allowed_targets:
+      - "征求意见稿"
+      - "正式实施"
+      - "修订草案"
+      - "专项行动"
+      - "关键制度变化短语"
+      - "关键数字、比例、期限"
+      - "生效时间/截止时间"
+    forbidden_targets:
+      - "整段高亮"
+      - "整句全部高亮"
+  paragraph2:
+    allowed_targets:
+      - "对平安XXX有直接影响"
+      - "后续将改变XXX场景"
+      - "平安集团不直接适用"
+      - "应立即/应优先/应开展/应评估/应梳理等动作短语"
+      - "关键业务落点短语"
+    forbidden_targets:
+      - "整段高亮"
+      - "主体和动作同时整句全红"
+  benchmark_mode:
+    max_highlight_segments: 1
+  opportunity_mode:
+    max_highlight_segments: 1
+
+forbidden_phrases:
+  - "该政策体现了"
+  - "该文件反映出"
+  - "这意味着"
+  - "从长期看"
+  - "从宏观层面看"
+  - "有助于"
+  - "进一步彰显"
+  - "要高度重视"
+  - "要认真学习领会"
+  - "要持续关注"
+
+sentence_length_rules:
+  paragraph1:
+    preferred_chars_per_sentence: "25-55"
+    max_chars_per_sentence: 90
+    soft_total_chars_major: 350
+    soft_total_chars_minor: 150
+  paragraph2:
+    preferred_chars_per_sentence: "18-45"
+    max_chars_per_sentence: 90
+  global_rules:
+    - "优先短句"
+    - "避免三层以上从句嵌套"
+    - "major 条目最多 8 句，minor 条目最多 4 句"
+
+benchmark_style_rules:
+  default_paragraph_count: 1
+  paragraph2_mode: "benchmark"
+  rules:
+    - "默认使用 benchmark_short（1 句 / ≤ 50 字）"
+    - "仅当 importance=major 且涉及战略导向时，允许 benchmark_long（2-5 句 / 80-300 字）"
+    - "只用对标口径"
+    - "不写强整改动作"
+    - "不写集团全面专项排查"
+  preferred_patterns:
+    - "平安集团不直接适用该文件，但应对标其核心要求，优先补齐XXX。"
+  forbidden_patterns:
+    - "应立即整改"
+    - "应立即开展专项排查"
+    - "应全面修订制度和系统"
+
+opportunity_style_rules:
+  default_paragraph_count: 1
+  paragraph2_mode: "opportunity"
+  rules:
+    - "只写机会或观察"
+    - "动作必须克制"
+    - "不得写整改动作"
+    - "不得夸张拔高"
+  preferred_patterns:
+    - "平安XXX可关注XXX机会。"
+    - "平安XXX或将受益于XXX带来的业务空间。"
+  forbidden_patterns:
+    - "应立即整改"
+    - "应尽快修订制度"
+    - "应开展专项排查"
+
+grouped_policy_style_rules:
+  merge_required: true
+  rules:
+    - "同一grouping_key只输出1条主卡片"
+    - "标题优先使用主文件标题"
+    - "配套实施公告并入paragraph1"
+    - "paragraph2只保留一套主体和一个主动作"
+    - "不得生成两条几乎重复的卡片"
+  preferred_expression:
+    - "……及配套实施安排……"
+    - "……并同步明确配套执行口径……"
+
+by_status:
+  正式实施:
+    paragraph1_style:
+      - "明确写已正式实施或已施行"
+      - "强调落地要求"
+    paragraph2_style:
+      - "可写直接动作"
+      - "动作可用应立即/应尽快/应启动/应开展"
+  征求意见稿:
+    paragraph1_style:
+      - "明确写公开征求意见"
+      - "写清反馈截止时间"
+    paragraph2_style:
+      - "动作保持克制"
+      - "只写评估、映射、预研、梳理"
+      - "不得写立即整改"
+  修订草案:
+    paragraph1_style:
+      - "明确写修订草案"
+      - "写清当前阶段"
+    paragraph2_style:
+      - "动作与征求意见稿一致，偏评估和梳理"
+  计划:
+    paragraph1_style:
+      - "写清计划安排和推进方向"
+    paragraph2_style:
+      - "以跟踪、预判、观察为主"
+  专项行动:
+    paragraph1_style:
+      - "写清行动范围、重点领域和阶段要求"
+    paragraph2_style:
+      - "可写专项排查、统一牵头、穿透整改"
+  对标适用:
+    paragraph1_style:
+      - "保持政策摘要客观"
+    paragraph2_style:
+      - "只用benchmark句式"
+  标题级分析:
+    paragraph1_style:
+      - "只保留已知事实，不做扩写"
+    paragraph2_style:
+      - "能不写就不写"
+      - "如写，只能克制表达"
+
+by_paragraph2_mode:
+  direct:
+    rules:
+      - "主体直接点名"
+      - "动作短促"
+      - "可补一个很短的focus phrase"
+    preferred_pattern: "对平安XXX有直接影响。应XXX。"
+  scene_direct_related:
+    rules:
+      - "必须体现业务场景变化"
+      - "优先写业务落点短语，不只写公司名"
+    preferred_pattern: "对平安XXX有直接影响，后续将改变XXX场景。应XXX。"
+  benchmark:
+    rules:
+      - "默认 benchmark_short（1 句 / ≤ 50 字）"
+      - "仅 importance=major 且涉及战略导向时允许 benchmark_long（2-5 句 / 80-300 字）"
+    preferred_pattern: "平安集团不直接适用该文件，但应对标其核心要求，优先补齐XXX。"
+  opportunity:
+    rules:
+      - "只写机会"
+      - "不写整改"
+    preferred_pattern: "平安XXX可关注XXX机会。"
+  none:
+    rules:
+      - "paragraph2 置空"
+    preferred_pattern: ""
+
+by_scene_family:
+  medical_service_payment_scene:
+    preferred_focus_phrases:
+      - "健康服务合作、保险支付衔接和慢病管理"
+  securities_terminal_and_order_scene:
+    preferred_focus_phrases:
+      - "终端展示、订单校验、风控阈值和客户提示"
+  ai_interaction_scene:
+    preferred_focus_phrases:
+      - "线上服务、数字员工、导诊陪伴场景"
+  bank_cross_border_credit_scene:
+    preferred_focus_phrases:
+      - "跨境贷款额度管理和间接授信边界"
+  customer_touchpoint_data_scene:
+    preferred_focus_phrases:
+      - "数据采集、标签画像、模型调用和外部共享链路"
+
+style_examples:
+  direct_good:
+    - "对平安期货有直接影响。应开展存量业务回归路径和资本充足性差距评估。"
+  scene_good:
+    - "对平安医疗健康板块有直接影响，后续将改变健康服务合作、保险支付衔接和慢病管理场景。应优先做地方实施细则映射。"
+  benchmark_good:
+    - "平安集团不直接适用该文件，但应对标其核心要求，优先补齐境外合规风险识别机制。"
+  opportunity_good:
+    - "平安证券投行业务可关注项目扩容带来的业务机会。"
+
+quality_preferences:
+  must_feel_like:
+    - "最终业务终稿"
+    - "总编修过的稿子"
+  must_not_feel_like:
+    - "规则拼接稿"
+    - "抓取摘要"
+    - "分析笔记"
+    - "政策宣传稿"
+  global_preferences:
+    - "句子短"
+    - "信息密"
+    - "少形容词"
+    - "少背景话"
+    - "少废话"

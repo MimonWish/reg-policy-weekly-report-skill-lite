@@ -1,0 +1,299 @@
+{
+  "version": "1.0",
+  "basis": "基于轻量版 business_rules/style/action_templates 统一收口的状态-动作强度配置",
+  "global_rules": {
+    "default_max_actions_in_paragraph2": 1,
+    "default_max_sentences_in_paragraph2": 2,
+    "rewrite_if_forbidden_prefix_hit": true,
+    "rewrite_if_strength_mismatch": true,
+    "rewrite_if_opportunity_contains_remediation": true,
+    "rewrite_if_benchmark_contains_strong_remediation": true
+  },
+  "status_levels": {
+    "正式实施": {
+      "action_strength": "strong",
+      "allowed_prefixes": [
+        "应立即",
+        "应尽快",
+        "应启动",
+        "应开展",
+        "应修订",
+        "应调整",
+        "应切换",
+        "应补齐",
+        "应盘点",
+        "应复核"
+      ],
+      "preferred_verbs": [
+        "开展",
+        "修订",
+        "调整",
+        "切换",
+        "补齐",
+        "盘点",
+        "复核",
+        "梳理"
+      ],
+      "forbidden_prefixes": [],
+      "allowed_modes": [
+        "direct",
+        "scene_direct_related",
+        "benchmark",
+        "opportunity",
+        "none"
+      ],
+      "description": "适用于已正式生效、已实施、已发布执行的政策。可使用整改、排查、修订、调整、切换等明确动作，但第二段仍只能保留一个主动作。"
+    },
+    "征求意见稿": {
+      "action_strength": "medium",
+      "allowed_prefixes": [
+        "应优先",
+        "应评估",
+        "应开展",
+        "应梳理",
+        "应预研",
+        "应准备",
+        "应盘点",
+        "应复核"
+      ],
+      "preferred_verbs": [
+        "评估",
+        "梳理",
+        "预研",
+        "准备",
+        "盘点",
+        "复核",
+        "映射"
+      ],
+      "forbidden_prefixes": [
+        "应立即",
+        "应尽快",
+        "应全面",
+        "应专项",
+        "应切换"
+      ],
+      "allowed_modes": [
+        "direct",
+        "scene_direct_related",
+        "benchmark",
+        "opportunity",
+        "none"
+      ],
+      "description": "适用于公开征求意见、尚未正式实施的政策。动作以评估、梳理、映射、预研为主，不得写立即整改、立即执行、专项排查。"
+    },
+    "修订草案": {
+      "action_strength": "medium",
+      "allowed_prefixes": [
+        "应评估",
+        "应梳理",
+        "应准备",
+        "应预研",
+        "应盘点"
+      ],
+      "preferred_verbs": [
+        "评估",
+        "梳理",
+        "准备",
+        "预研",
+        "盘点",
+        "映射"
+      ],
+      "forbidden_prefixes": [
+        "应立即",
+        "应尽快",
+        "应全面",
+        "应专项",
+        "应切换"
+      ],
+      "allowed_modes": [
+        "direct",
+        "scene_direct_related",
+        "benchmark",
+        "opportunity",
+        "none"
+      ],
+      "description": "适用于草案、修订草案阶段。动作强度与征求意见稿接近，偏评估和准备，不写强整改。"
+    },
+    "计划": {
+      "action_strength": "soft",
+      "allowed_prefixes": [
+        "可关注",
+        "可评估",
+        "应跟踪",
+        "应预判"
+      ],
+      "preferred_verbs": [
+        "关注",
+        "评估",
+        "跟踪",
+        "预判"
+      ],
+      "forbidden_prefixes": [
+        "应立即",
+        "应尽快",
+        "应开展专项排查",
+        "应全面修订",
+        "应切换"
+      ],
+      "allowed_modes": [
+        "opportunity",
+        "benchmark",
+        "none",
+        "scene_direct_related"
+      ],
+      "description": "适用于行动计划、工作计划、方向性安排。以跟踪、预判、机会观察为主，原则上不写强整改动作。"
+    },
+    "专项行动": {
+      "action_strength": "strong",
+      "allowed_prefixes": [
+        "应立即",
+        "应尽快",
+        "应开展",
+        "应补齐",
+        "应统一",
+        "应排查",
+        "应清理"
+      ],
+      "preferred_verbs": [
+        "开展",
+        "补齐",
+        "统一",
+        "排查",
+        "清理",
+        "整治",
+        "盘点"
+      ],
+      "forbidden_prefixes": [],
+      "allowed_modes": [
+        "direct",
+        "scene_direct_related",
+        "benchmark",
+        "none"
+      ],
+      "description": "适用于专项整治、专项行动、集中治理类文件。可写专项排查、统一牵头、清理整治等强动作，但仍需控制为一个主动作。"
+    },
+    "对标适用": {
+      "action_strength": "soft",
+      "allowed_prefixes": [
+        "应对标",
+        "应优先",
+        "可参照"
+      ],
+      "preferred_verbs": [
+        "对标",
+        "补齐",
+        "参照",
+        "梳理"
+      ],
+      "forbidden_prefixes": [
+        "应立即",
+        "应尽快",
+        "应开展专项排查",
+        "应全面修订",
+        "应统一牵头"
+      ],
+      "allowed_modes": [
+        "benchmark",
+        "none"
+      ],
+      "description": "适用于平安集团不直接适用、但有借鉴意义的文件。只允许克制的对标表达，不得扩写成长段整改。"
+    },
+    "标题级分析": {
+      "action_strength": "soft",
+      "allowed_prefixes": [
+        "可关注",
+        "应跟踪",
+        "可评估"
+      ],
+      "preferred_verbs": [
+        "关注",
+        "跟踪",
+        "评估"
+      ],
+      "forbidden_prefixes": [
+        "应立即",
+        "应尽快",
+        "应开展",
+        "应修订",
+        "应专项",
+        "应切换"
+      ],
+      "allowed_modes": [
+        "benchmark",
+        "opportunity",
+        "none"
+      ],
+      "description": "适用于只有标题或公开信息极少、正文事实不足的场景。动作必须最克制，原则上不写第二段或只写一句观察/对标。"
+    }
+  },
+  "mode_overrides": {
+    "benchmark": {
+      "allowed_prefixes": [
+        "应对标",
+        "应优先",
+        "可参照"
+      ],
+      "forbidden_prefixes": [
+        "应立即",
+        "应尽快",
+        "应开展专项排查",
+        "应全面修订",
+        "应统一牵头",
+        "应切换"
+      ],
+      "description": "benchmark 模式无论文件状态如何，原则上都只允许对标型表达。"
+    },
+    "opportunity": {
+      "allowed_prefixes": [
+        "可关注",
+        "可评估",
+        "可把握"
+      ],
+      "forbidden_prefixes": [
+        "应立即",
+        "应尽快",
+        "应开展",
+        "应修订",
+        "应补齐",
+        "应排查",
+        "应切换"
+      ],
+      "description": "opportunity 模式只能写机会或观察，不得附带整改或排查动作。"
+    },
+    "none": {
+      "allowed_prefixes": [],
+      "forbidden_prefixes": [
+        "应立即",
+        "应尽快",
+        "应开展",
+        "应修订",
+        "可关注"
+      ],
+      "description": "none 模式下 paragraph2 应为空。"
+    }
+  },
+  "normalization_rules": {
+    "prefix_rewrite_map": {
+      "应立即开展专项排查": "应开展",
+      "应立即执行": "应评估",
+      "应全面修订制度和系统": "应开展监管要求与现有制度的差距映射",
+      "应立即切换交易参数": "应提前切换交易参数",
+      "应立即开展存量业务回归路径和资本充足性差距评估": "应开展存量业务回归路径和资本充足性差距评估",
+      "应全面检视并调整与第三方平台的合作模式": "应重新审查与第三方平台的合作边界"
+    },
+    "sentence_softening_rules": [
+      {
+        "from": "应立即整改",
+        "to": "应评估并梳理相关差距"
+      },
+      {
+        "from": "应立即执行",
+        "to": "应优先评估实施影响"
+      },
+      {
+        "from": "应全面修订",
+        "to": "应开展差距映射"
+      }
+    ]
+  }
+}

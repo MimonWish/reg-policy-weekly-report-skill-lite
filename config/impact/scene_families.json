@@ -1,0 +1,162 @@
+{
+  "version": "1.2",
+  "basis": "基于附件版 scene_families.json 修订定稿，兼容轻量版周报生成逻辑、修订版 topic_families 与历史业务终稿表达",
+  "scene_families": [
+    {
+      "scene_id": "medical_service_payment_scene",
+      "scene_name": "医疗服务与保险支付衔接",
+      "aliases": ["医疗服务支付场景", "健康服务场景", "慢病管理场景"],
+      "focus_phrase": "健康服务合作、保险支付衔接和慢病管理",
+      "indicative_keywords": ["分级诊疗", "医联体", "基层首诊", "双向转诊", "医保支付", "慢病管理", "健康服务", "长护险"],
+      "related_topic_families": ["medical_service_collaboration", "insurance_product_governance"],
+      "primary_entities": ["平安医疗健康板块", "平安健康险", "平安养老险", "平安寿险"],
+      "typical_systems": ["健康管理平台", "导诊问诊平台", "慢病管理平台", "理赔系统"],
+      "typical_actions": ["local_rule_mapping", "service_payment_model_assessment"],
+      "paragraph2_mode_hint": "scene_direct_related"
+    },
+    {
+      "scene_id": "securities_terminal_and_order_scene",
+      "scene_name": "证券终端展示与订单控制",
+      "aliases": ["终端交易场景", "交易参数场景", "证券终端场景"],
+      "focus_phrase": "终端展示、订单校验、风控阈值和客户提示",
+      "indicative_keywords": ["交易规则", "终端展示", "订单校验", "风控阈值", "客户提示", "参数切换", "ETF", "风险警示股票", "盘后交易"],
+      "related_topic_families": ["securities_trading_control", "consumer_protection_and_marketing"],
+      "primary_entities": ["平安证券交易与经纪"],
+      "typical_systems": ["交易终端", "订单校验系统", "风控参数系统", "客户提示系统"],
+      "typical_actions": ["trading_parameter_switch", "display_and_prompt_adjustment"],
+      "paragraph2_mode_hint": "scene_direct_related"
+    },
+    {
+      "scene_id": "ai_interaction_scene",
+      "scene_name": "AI互动与数字员工场景",
+      "aliases": ["拟人化互动场景", "数字员工场景", "AI客服场景"],
+      "focus_phrase": "线上服务、数字员工和导诊陪伴场景",
+      "indicative_keywords": ["拟人化互动", "数字虚拟人", "AI服务", "人工干预", "责任留痕", "身份标识", "数字员工", "导诊陪伴"],
+      "related_topic_families": ["ai_model_and_interaction_governance", "personal_information_and_data_governance"],
+      "primary_entities": ["集团科技条线", "平安银行", "平安医疗健康板块"],
+      "typical_systems": ["AI客服平台", "数字员工平台", "模型服务平台", "导诊问诊平台"],
+      "typical_actions": ["ai_governance_integration", "human_override_setup"],
+      "paragraph2_mode_hint": "scene_direct_related"
+    },
+    {
+      "scene_id": "bank_cross_border_credit_scene",
+      "scene_name": "银行跨境授信与境外融资",
+      "aliases": ["跨境授信场景", "境外放款场景", "跨境同业场景"],
+      "focus_phrase": "跨境贷款额度管理和间接授信边界",
+      "indicative_keywords": ["跨境贷款", "境外贷款", "间接授信", "外汇管理", "杠杆率", "净融出余额", "跨境同业融资"],
+      "related_topic_families": ["cross_border_finance", "overseas_legal_risk"],
+      "primary_entities": ["平安银行对公业务", "平安银行"],
+      "typical_systems": ["公司授信系统", "跨境业务系统", "外汇业务平台"],
+      "typical_actions": ["cross_border_rule_assessment", "process_boundary_alignment"],
+      "paragraph2_mode_hint": "direct"
+    },
+    {
+      "scene_id": "customer_touchpoint_data_scene",
+      "scene_name": "客户触点数据采集与治理",
+      "aliases": ["数据链路治理场景", "客户数据场景", "画像标签场景"],
+      "focus_phrase": "数据采集、标签画像、模型调用和外部共享链路",
+      "indicative_keywords": ["数据采集", "标签画像", "模型调用", "外部共享", "个人信息", "SDK", "数据治理", "留痕"],
+      "related_topic_families": ["personal_information_and_data_governance", "ai_model_and_interaction_governance", "consumer_protection_and_marketing"],
+      "primary_entities": ["集团科技条线", "平安银行", "平安医疗健康板块"],
+      "typical_systems": ["数据中台", "客户标签平台", "SDK管理平台", "外部共享接口"],
+      "typical_actions": ["data_permission_chain_review", "sdk_and_external_sharing_review"],
+      "paragraph2_mode_hint": "scene_direct_related"
+    },
+    {
+      "scene_id": "digital_marketing_and_platform_scene",
+      "scene_name": "数字营销矩阵与第三方平台合作",
+      "aliases": ["数字营销场景", "收银台展示场景", "第三方平台场景"],
+      "focus_phrase": "数字营销矩阵、第三方平台合作和收银台展示",
+      "indicative_keywords": ["网络营销", "第三方平台", "直播", "短视频", "收银台展示", "区隔展示", "个人账号", "持牌机构"],
+      "related_topic_families": ["consumer_protection_and_marketing", "insurance_product_governance"],
+      "primary_entities": ["平安银行零售业务", "壹钱包", "平安产险", "平安寿险"],
+      "typical_systems": ["营销投放平台", "收银台页面", "第三方导流页面", "直播展业平台"],
+      "typical_actions": ["display_and_prompt_adjustment", "third_party_platform_review", "marketing_matrix_cleanup"],
+      "paragraph2_mode_hint": "scene_direct_related"
+    },
+    {
+      "scene_id": "customer_disclosure_scene",
+      "scene_name": "对客信息披露与告知",
+      "aliases": ["客户告知场景", "信息披露场景", "对客提示场景"],
+      "focus_phrase": "对客提示口径、信息披露和适当性管理",
+      "indicative_keywords": ["信息披露", "对客提示", "适当性", "综合融资成本", "明示表", "弹窗", "告知义务"],
+      "related_topic_families": ["consumer_protection_and_marketing", "securities_trading_control", "listed_company_governance"],
+      "primary_entities": ["平安银行零售业务", "平安寿险", "集团消保团队"],
+      "typical_systems": ["客户提示系统", "披露系统", "适当性评估系统", "收银台页面"],
+      "typical_actions": ["display_and_prompt_adjustment", "suitability_review"],
+      "paragraph2_mode_hint": "scene_direct_related"
+    },
+    {
+      "scene_id": "group_control_penetration_scene",
+      "scene_name": "集团穿透治理与统一口径",
+      "aliases": ["穿透监管场景", "集团统一口径场景", "制度内化场景"],
+      "focus_phrase": "集团统一口径、穿透治理和制度内化",
+      "indicative_keywords": ["穿透监管", "统一口径", "制度映射", "外规内化", "合规穿透", "集团治理"],
+      "related_topic_families": ["internal_control_and_integrity", "personal_information_and_data_governance", "ai_model_and_interaction_governance", "cross_border_finance"],
+      "primary_entities": ["集团合规部", "集团消保团队", "集团科技条线"],
+      "typical_systems": ["合规管理平台", "制度管理系统", "数据治理平台", "问题台账系统"],
+      "typical_actions": ["rule_mapping_and_revision", "control_embedding_and_review"],
+      "paragraph2_mode_hint": "direct"
+    },
+    {
+      "scene_id": "overseas_legal_risk_scene",
+      "scene_name": "涉外法律风险与域外管辖",
+      "aliases": ["域外管辖场景", "境外合规场景", "涉外法律场景"],
+      "focus_phrase": "境外合规风险识别和应对机制",
+      "indicative_keywords": ["域外管辖", "阻断机制", "涉外", "境外合规", "反制裁", "外国法律"],
+      "related_topic_families": ["overseas_legal_risk", "cross_border_finance", "internal_control_and_integrity"],
+      "primary_entities": ["平安银行对公业务", "集团合规部"],
+      "typical_systems": ["合规管理平台", "涉外规则跟踪台账", "跨境业务审批系统"],
+      "typical_actions": ["overseas_risk_identification", "rule_mapping_and_revision"],
+      "paragraph2_mode_hint": "benchmark"
+    },
+    {
+      "scene_id": "futures_operating_boundary_scene",
+      "scene_name": "期货经营边界与子公司业务回归",
+      "aliases": ["期货业务边界场景", "期货许可场景", "期货子公司场景"],
+      "focus_phrase": "存量业务回归路径和资本充足性差距评估",
+      "indicative_keywords": ["期货公司", "做市交易", "衍生品交易", "行政许可", "子公司业务回归", "过渡期", "风险管理子公司"],
+      "related_topic_families": ["futures_license_and_boundary", "internal_control_and_integrity"],
+      "primary_entities": ["平安期货"],
+      "typical_systems": ["期货交易系统", "风险管理子公司系统", "接入管理系统"],
+      "typical_actions": ["license_capital_gap_assessment", "operating_boundary_adjustment"],
+      "paragraph2_mode_hint": "direct"
+    },
+    {
+      "scene_id": "investment_bank_deal_scene",
+      "scene_name": "投行承做与审核场景",
+      "aliases": ["IPO场景", "投行项目场景", "发行承销场景"],
+      "focus_phrase": "投行项目扩容和承做审核流程",
+      "indicative_keywords": ["IPO", "再融资", "创业板", "审核", "承销", "预先审阅", "项目扩容", "储架发行"],
+      "related_topic_families": ["capital_market_reform", "listed_company_governance"],
+      "primary_entities": ["平安证券投行业务"],
+      "typical_systems": ["投行项目管理系统", "尽调系统", "发行承销平台"],
+      "typical_actions": ["market_opportunity_assessment", "rule_mapping_and_revision"],
+      "paragraph2_mode_hint": "opportunity"
+    },
+    {
+      "scene_id": "capital_market_allocation_scene",
+      "scene_name": "中长期资金配置与资本市场参与",
+      "aliases": ["资本市场配置场景", "中长期资金场景", "战略投资者场景"],
+      "focus_phrase": "中长期资金配置和资本市场参与机会",
+      "indicative_keywords": ["中长期资金", "社保基金", "养老金", "商业保险资金", "银行理财", "战略投资者"],
+      "related_topic_families": ["capital_market_reform"],
+      "primary_entities": ["平安养老险", "平安寿险", "平安资管", "平安基金", "平安资本"],
+      "typical_systems": ["投资管理系统", "合规审批系统", "投资决策支持系统"],
+      "typical_actions": ["market_opportunity_assessment"],
+      "paragraph2_mode_hint": "opportunity"
+    },
+    {
+      "scene_id": "listed_company_secretary_scene",
+      "scene_name": "上市公司董秘与信息披露治理",
+      "aliases": ["董秘场景", "信息披露治理场景", "上市公司治理场景"],
+      "focus_phrase": "信息披露链路和董秘治理机制",
+      "indicative_keywords": ["信息披露", "短线交易", "董事会秘书", "审计委员会", "持股比例", "关联交易"],
+      "related_topic_families": ["listed_company_governance", "capital_market_reform", "internal_control_and_integrity"],
+      "primary_entities": ["平安证券", "平安证券投行业务"],
+      "typical_systems": ["信息披露系统", "董秘支持系统", "合规审批系统"],
+      "typical_actions": ["disclosure_chain_review", "secretary_governance_review"],
+      "paragraph2_mode_hint": "direct"
+    }
+  ]
+}

@@ -1,0 +1,243 @@
+{
+  "version": "1.1",
+  "basis": "基于附件版 topic_families.json 修订定稿，兼容轻量版周报生成逻辑与历史业务终稿表达",
+  "policy_types": {
+    "部门规章": {
+      "verb": ["发布", "修订发布", "联合发布"],
+      "action_strength": "strong"
+    },
+    "国务院文件": {
+      "verb": ["印发", "公布"],
+      "action_strength": "strong"
+    },
+    "行政法规": {
+      "verb": ["公布"],
+      "action_strength": "strong"
+    },
+    "法律": {
+      "verb": ["审议通过", "公开征求意见"],
+      "action_strength": "strong"
+    },
+    "法律草案": {
+      "verb": ["审议通过", "公开征求意见"],
+      "action_strength": "medium"
+    },
+    "司法解释": {
+      "verb": ["联合发布"],
+      "action_strength": "strong"
+    },
+    "行业自律规则": {
+      "verb": ["发布", "修订发布"],
+      "action_strength": "medium"
+    },
+    "顶层规划": {
+      "verb": ["印发", "发布"],
+      "action_strength": "soft"
+    },
+    "地方监管文件": {
+      "verb": ["发布", "印发"],
+      "action_strength": "medium"
+    },
+    "内部函件": {
+      "verb": ["下发", "印发"],
+      "action_strength": "medium"
+    }
+  },
+  "families": [
+    {
+      "family_id": "cross_border_finance",
+      "family_name": "跨境金融与境外融资",
+      "aliases": ["跨境金融", "境外贷款", "境外放款", "跨境同业融资", "人民币跨境融资", "跨境授信"],
+      "indicative_topics": ["境外贷款业务调整", "境内企业境外放款", "人民币跨境同业融资", "外汇便利化", "跨境融资规则调整"],
+      "indicative_keywords": ["境外贷款", "境外放款", "跨境融资", "跨境同业融资", "间接贷款", "杠杆率", "净融出余额", "外汇", "宏观审慎", "走出去企业"],
+      "default_regulatory_targets": ["银行业金融机构", "境内企业", "外资银行", "进出口银行"],
+      "typical_carriers": ["制度", "流程", "系统"],
+      "default_impact_level_hint": "A1_direct_obligation",
+      "preferred_scene_families": ["bank_cross_border_credit_scene", "overseas_legal_risk_scene"],
+      "preferred_entities": ["平安银行对公业务", "平安银行", "平安租赁", "集团合规部"],
+      "preferred_action_families": ["cross_border_rule_assessment", "process_boundary_alignment", "overseas_risk_identification"],
+      "benchmark_only": false,
+      "opportunity_possible": false
+    },
+    {
+      "family_id": "futures_license_and_boundary",
+      "family_name": "期货经营边界与许可监管",
+      "aliases": ["期货监管", "期货经营边界", "期货行政许可", "期货子公司业务回归"],
+      "indicative_topics": ["期货公司监督管理办法", "期货子公司业务回归", "期货业务行政许可", "期货资本门槛"],
+      "indicative_keywords": ["期货公司", "做市交易", "衍生品交易", "行政许可", "最低注册资本", "股东行为", "穿透监管", "过渡期", "风险管理子公司"],
+      "default_regulatory_targets": ["期货公司", "风险管理子公司"],
+      "typical_carriers": ["行政许可", "制度", "资本", "流程"],
+      "default_impact_level_hint": "A1_direct_obligation",
+      "preferred_scene_families": ["futures_operating_boundary_scene", "group_control_penetration_scene"],
+      "preferred_entities": ["平安期货", "集团合规部"],
+      "preferred_action_families": ["license_capital_gap_assessment", "operating_boundary_adjustment", "process_boundary_alignment"],
+      "benchmark_only": false,
+      "opportunity_possible": false
+    },
+    {
+      "family_id": "capital_market_reform",
+      "family_name": "资本市场改革与中长期资金配置",
+      "aliases": ["资本市场改革", "创业板改革", "再融资改革", "中长期资金入市", "战略投资者扩围"],
+      "indicative_topics": ["深化创业板改革", "证券期货法律适用意见修订", "再融资制度优化", "战略投资者类型扩围"],
+      "indicative_keywords": ["创业板", "上市标准", "IPO", "再融资", "储架发行", "战略投资者", "中长期资金", "社保基金", "养老金", "商业保险资金", "银行理财"],
+      "default_regulatory_targets": ["证券公司", "基金管理人", "资管机构", "保险资金管理人", "上市公司"],
+      "typical_carriers": ["制度", "流程", "系统", "产品"],
+      "default_impact_level_hint": "C_watch_or_opportunity",
+      "preferred_scene_families": ["investment_bank_deal_scene", "capital_market_allocation_scene", "listed_company_secretary_scene"],
+      "preferred_entities": ["平安证券投行业务", "平安证券交易与经纪", "平安基金", "平安资管", "平安养老险", "平安寿险", "平安资本"],
+      "preferred_action_families": ["market_opportunity_assessment", "rule_mapping_and_revision", "disclosure_chain_review"],
+      "benchmark_only": false,
+      "opportunity_possible": true
+    },
+    {
+      "family_id": "consumer_protection_and_marketing",
+      "family_name": "消费者保护与金融营销合规",
+      "aliases": ["消保", "网络营销治理", "贷款成本明示", "产品适当性", "投诉处理"],
+      "indicative_topics": ["金融产品网络营销管理", "贷款综合融资成本明示", "产品适当性管理", "投诉处理管理", "第三方平台营销"],
+      "indicative_keywords": ["网络营销", "营销话术", "直播短视频", "个人账号", "持牌机构", "支付工具与贷款产品区隔展示", "综合融资成本", "投诉处理", "适当性", "第三方平台"],
+      "default_regulatory_targets": ["银行保险机构", "证券基金机构", "金融产品销售机构", "第三方合作平台"],
+      "typical_carriers": ["制度", "流程", "系统", "外部合作", "人员"],
+      "default_impact_level_hint": "A2_scene_direct_related",
+      "preferred_scene_families": ["digital_marketing_and_platform_scene", "customer_disclosure_scene", "customer_touchpoint_data_scene"],
+      "preferred_entities": ["平安银行零售业务", "壹钱包", "平安寿险", "平安产险", "集团消保团队"],
+      "preferred_action_families": ["display_and_prompt_adjustment", "third_party_platform_review", "marketing_matrix_cleanup"],
+      "benchmark_only": false,
+      "opportunity_possible": false
+    },
+    {
+      "family_id": "personal_information_and_data_governance",
+      "family_name": "个人信息保护与数据治理",
+      "aliases": ["个人信息保护", "数据治理", "数据合规", "数据安全", "隐私保护"],
+      "indicative_topics": ["个人信息保护专项行动", "数据安全管理", "数据跨境传输", "画像标签治理", "外部数据共享"],
+      "indicative_keywords": ["个人信息", "数据安全", "数据治理", "画像标签", "外部共享", "SDK", "数据跨境", "数据采集", "模型调用", "留痕"],
+      "default_regulatory_targets": ["金融机构", "互联网平台", "数据处理者", "医疗卫生机构"],
+      "typical_carriers": ["制度", "系统", "流程", "外部合作", "模型/数据"],
+      "default_impact_level_hint": "B1_group_penetrating",
+      "preferred_scene_families": ["customer_touchpoint_data_scene", "ai_interaction_scene", "group_control_penetration_scene"],
+      "preferred_entities": ["集团科技条线", "集团合规部", "集团消保团队", "平安银行", "平安医疗健康板块"],
+      "preferred_action_families": ["data_permission_chain_review", "sdk_and_external_sharing_review", "rule_mapping_and_revision"],
+      "benchmark_only": false,
+      "opportunity_possible": false
+    },
+    {
+      "family_id": "ai_model_and_interaction_governance",
+      "family_name": "人工智能模型治理与互动服务治理",
+      "aliases": ["AI治理", "大模型治理", "拟人化互动治理", "数字虚拟人治理", "科技伦理"],
+      "indicative_topics": ["人工智能科技伦理审查", "人工智能拟人化互动服务管理", "数字虚拟人信息服务管理", "基金经营机构大模型应用规范"],
+      "indicative_keywords": ["人工智能", "大模型", "科技伦理", "拟人化互动", "数字虚拟人", "训练数据", "算法备案", "身份标识", "人工干预", "责任留痕"],
+      "default_regulatory_targets": ["金融机构", "互联网信息服务提供者", "AI服务提供者", "科技活动组织者"],
+      "typical_carriers": ["系统", "流程", "制度", "人员", "模型/数据"],
+      "default_impact_level_hint": "B1_group_penetrating",
+      "preferred_scene_families": ["ai_interaction_scene", "customer_touchpoint_data_scene", "group_control_penetration_scene"],
+      "preferred_entities": ["集团科技条线", "集团合规部", "集团消保团队", "平安银行", "平安医疗健康板块", "平安基金"],
+      "preferred_action_families": ["ai_governance_integration", "human_override_setup", "sdk_and_external_sharing_review", "training_data_gap_analysis"],
+      "benchmark_only": false,
+      "opportunity_possible": false
+    },
+    {
+      "family_id": "medical_service_collaboration",
+      "family_name": "医疗服务协同与养老健康服务衔接",
+      "aliases": ["分级诊疗", "医疗协同", "健康服务协同", "长护险衔接", "养老健康服务"],
+      "indicative_topics": ["分级诊疗体系建设", "长期护理保险", "养老托育与健康服务扩能", "医疗服务支付协同"],
+      "indicative_keywords": ["分级诊疗", "医联体", "基层首诊", "双向转诊", "医保支付", "慢病管理", "长期护理保险", "养老托育", "健康服务"],
+      "default_regulatory_targets": ["医疗卫生机构", "医保管理主体", "健康服务提供者", "保险机构"],
+      "typical_carriers": ["流程", "产品", "系统", "外部合作"],
+      "default_impact_level_hint": "A2_scene_direct_related",
+      "preferred_scene_families": ["medical_service_payment_scene", "customer_touchpoint_data_scene"],
+      "preferred_entities": ["平安医疗健康板块", "平安健康险", "平安养老险", "平安寿险"],
+      "preferred_action_families": ["local_rule_mapping", "service_payment_model_assessment"],
+      "benchmark_only": false,
+      "opportunity_possible": true
+    },
+    {
+      "family_id": "insurance_product_governance",
+      "family_name": "保险产品治理与销售合规",
+      "aliases": ["保险产品", "保险销售", "条款备案", "负面清单", "保险营销"],
+      "indicative_topics": ["人身险负面清单", "财产险销售从业人员管理", "保险产品条款备案", "保险网络营销"],
+      "indicative_keywords": ["保险产品", "条款", "备案", "负面清单", "销售话术", "展业资格", "第三方平台引流"],
+      "default_regulatory_targets": ["保险公司", "保险中介机构", "第三方平台"],
+      "typical_carriers": ["制度", "流程", "人员", "产品"],
+      "default_impact_level_hint": "A1_direct_obligation",
+      "preferred_scene_families": ["insurance_product_design_scene", "digital_marketing_and_platform_scene", "customer_disclosure_scene"],
+      "preferred_entities": ["平安寿险", "平安产险", "平安健康险", "平安养老险"],
+      "preferred_action_families": ["product_review_and_refiling", "sales_and_clause_alignment", "third_party_platform_review"],
+      "benchmark_only": false,
+      "opportunity_possible": false
+    },
+    {
+      "family_id": "securities_trading_control",
+      "family_name": "证券交易规则与终端控制",
+      "aliases": ["交易规则", "终端展示", "订单校验", "风控参数", "经纪业务"],
+      "indicative_topics": ["交易规则调整", "ETF盘后固定价格交易", "风险警示股票机制", "盘后交易扩围"],
+      "indicative_keywords": ["交易规则", "终端展示", "订单校验", "风控阈值", "客户提示", "参数切换", "ETF", "风险警示股票"],
+      "default_regulatory_targets": ["证券公司", "证券交易所"],
+      "typical_carriers": ["系统", "流程", "参数"],
+      "default_impact_level_hint": "A2_scene_direct_related",
+      "preferred_scene_families": ["securities_terminal_and_order_scene", "customer_disclosure_scene"],
+      "preferred_entities": ["平安证券交易与经纪"],
+      "preferred_action_families": ["trading_parameter_switch", "display_and_prompt_adjustment", "process_boundary_alignment"],
+      "benchmark_only": false,
+      "opportunity_possible": false
+    },
+    {
+      "family_id": "listed_company_governance",
+      "family_name": "上市公司治理与信息披露",
+      "aliases": ["上市公司治理", "信息披露", "董秘治理", "审计委员会", "短线交易"],
+      "indicative_topics": ["上市公司信息披露指引", "证券期货法律适用意见", "短线交易认定", "董事会秘书职责"],
+      "indicative_keywords": ["信息披露", "短线交易", "董事会秘书", "审计委员会", "持股比例", "关联交易"],
+      "default_regulatory_targets": ["上市公司", "证券公司", "基金管理人"],
+      "typical_carriers": ["制度", "流程", "人员"],
+      "default_impact_level_hint": "A1_direct_obligation",
+      "preferred_scene_families": ["listed_company_secretary_scene", "customer_disclosure_scene"],
+      "preferred_entities": ["平安证券", "平安证券投行业务", "集团合规部"],
+      "preferred_action_families": ["disclosure_chain_review", "secretary_governance_review"],
+      "benchmark_only": false,
+      "opportunity_possible": false
+    },
+    {
+      "family_id": "internal_control_and_integrity",
+      "family_name": "内控治理、廉洁从业与合规穿透",
+      "aliases": ["内控治理", "合规管理", "穿透监管", "廉洁从业", "反舞弊与诚信约束"],
+      "indicative_topics": ["合规管理自律规范", "央企内控体系建设", "廉洁从业规定", "反舞弊与刑事风险升级", "监测预警非法金融活动"],
+      "indicative_keywords": ["内控", "合规", "穿透监管", "廉洁", "诚信", "风险全息画像", "问题台账", "治理体系", "内控监督", "非法金融活动监测预警"],
+      "default_regulatory_targets": ["金融机构", "中央企业", "国有企业领导人员", "上市公司管理人员", "集团治理主体"],
+      "typical_carriers": ["制度", "流程", "人员", "系统"],
+      "default_impact_level_hint": "B1_group_penetrating",
+      "preferred_scene_families": ["group_control_penetration_scene", "listed_company_secretary_scene", "overseas_legal_risk_scene"],
+      "preferred_entities": ["集团合规部", "集团科技条线", "集团财务部", "平安银行", "平安证券", "平安期货"],
+      "preferred_action_families": ["rule_mapping_and_revision", "control_embedding_and_review", "integrity_risk_screening"],
+      "benchmark_only": false,
+      "opportunity_possible": false
+    },
+    {
+      "family_id": "overseas_legal_risk",
+      "family_name": "涉外法律风险与域外管辖",
+      "aliases": ["域外管辖", "涉外法律", "境外合规", "反制裁", "阻断机制"],
+      "indicative_topics": ["反外国不当域外管辖条例", "涉外法律风险防控", "境外合规管理"],
+      "indicative_keywords": ["域外管辖", "阻断机制", "涉外", "境外合规", "反制裁", "外国法律"],
+      "default_regulatory_targets": ["金融机构", "跨国企业", "涉外经营主体"],
+      "typical_carriers": ["制度", "流程"],
+      "default_impact_level_hint": "B2_benchmark_only",
+      "preferred_scene_families": ["overseas_legal_risk_scene", "group_control_penetration_scene"],
+      "preferred_entities": ["平安银行对公业务", "集团合规部", "集团财务部"],
+      "preferred_action_families": ["overseas_risk_identification", "rule_mapping_and_revision"],
+      "benchmark_only": true,
+      "opportunity_possible": false
+    },
+    {
+      "family_id": "macro_policy_and_planning",
+      "family_name": "宏观产业政策与顶层规划",
+      "aliases": ["宏观政策", "产业政策", "顶层规划", "行动方案", "工作计划"],
+      "indicative_topics": ["政府工作报告", "十五五规划", "服务业扩能提质", "物联网行动方案"],
+      "indicative_keywords": ["服务业", "产业政策", "规划", "行动方案", "工作计划", "指引意义"],
+      "default_regulatory_targets": [],
+      "typical_carriers": ["战略", "方向"],
+      "default_impact_level_hint": "C_watch_or_opportunity",
+      "preferred_scene_families": [],
+      "preferred_entities": [],
+      "preferred_action_families": ["market_opportunity_assessment"],
+      "benchmark_only": false,
+      "opportunity_possible": true
+    }
+  ]
+}

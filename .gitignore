@@ -1,0 +1,44 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+venv/
+env/
+*.egg-info/
+.eggs/
+dist/
+build/
+
+# Test / coverage
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+*.cover
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Project outputs
+output/
+output*/
+*.docx
+*.zip
+
+# Secrets
+.env
+.env.local
+*.key
+
+# Claude Code local settings
+.claude/
