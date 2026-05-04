@@ -1,7 +1,7 @@
 ---
 name: reg-policy-weekly-report-skill-lite
 description: 轻量版"监管政策周报解读 + 自进化学习" Skill。输入是本周政策清单 JSON，输出是符合平安集团高管阅读口径的《监管政策周报》Word 正式版。当用户提到"监管政策周报""监管周报""政策解读周报""平安政策周报""把本周政策跑成周报""本周政策清单生成周报"或类似工作流时，必须使用本 Skill；当用户给到本周政策清单 JSON 并要求出 Word 报告，或要求基于人工最终终稿做 few-shot / forbidden expansion 增量学习时，也必须使用本 Skill。
-version: 0.2.0
+version: 0.3.0
 ---
 
 # reg-policy-weekly-report-skill-lite
@@ -44,25 +44,59 @@ version: 0.2.0
 └── tests/                # 单元测试（pytest）
 ```
 
-## 主链路（generate）
+## 主链路（推荐：Skill-as-instructions 模式）
 
-```
-weekly_policies.json
-   ↓ fetcher.py        官网抓取（retry / timeout / title-only fallback）
-fetched_articles.json
-   ↓ extractor.py      抽取正文 + 聚合 grouped pair + 构建事实卡（LLM 精炼可选）
-policy_fact_sheets.json
-   ↓ generator.py      few-shot 检索 → LLM 一次性生成整期草稿
-policy_card_drafts.json
-   ↓ validator.py      少量硬校验
-validation_report.json
-   ↓ generator.py      失败项二次重写
-final_report_content.json
-   ↓ renderer.py       python-docx 渲染
-监管政策周报_YYYY.MM.DD.docx
+本 Skill 把"重活"分给会话中的 Claude（你正在使用的这个 LLM），Python 只负责确定性任务（抓取/解析/校验/渲染）。**无需独立的 ANTHROPIC_API_KEY**。
+
+### Stage A：准备（python prepare）
+
+```bash
+python -m src.main prepare \
+  --input ./examples/example_weekly_policies.json \
+  --output-dir ./output
 ```
 
-每步都落盘 JSON，便于排查；`run_log.md` 记录全链路。
+产物：
+- `normalized_policies.json` / `fetched_articles.json` / `policy_fact_sheets.json`
+- `retrieved_examples.json`
+- **`generation_prompt.md`** — 包含完整提示词、fact_sheets、few-shot 的 Markdown，会话 LLM 直接读取它
+
+### Stage B：会话 LLM 生成草稿（无需独立 API key）
+
+调用本 Skill 的 Claude Code 会话直接：
+1. `Read output/generation_prompt.md`
+2. 严格按提示词中的写作规则与 schema 产出 drafts JSON
+3. `Write output/policy_card_drafts.json`
+
+**关键约束（会话 LLM 必须遵守）**：
+- `paragraph1` 只能改写 `allowed_paragraph1_facts / core_points / numbers_and_thresholds / time_requirements`
+- `paragraph2` 只能使用 `allowed_paragraph2_entities / allowed_paragraph2_actions`
+- `paragraph2_mode` 必为 `direct / scene_direct_related / benchmark / opportunity / none` 之一
+- `grouped_key` 相同的多条政策合并为 1 条
+- 不写行业背景、宏观分析、空转套话；直接写"谁受影响、怎么改、先做什么"
+- 详细规则见 `docs/REFERENCE.md`
+
+### Stage C：校验 + 渲染（python finalize）
+
+```bash
+python -m src.main finalize --output-dir ./output
+```
+
+产物：
+- `validation_report.json` — 硬校验结果
+- `final_report_content.json`
+- `监管政策周报_YYYY.MM.DD.docx` — 最终交付物
+
+如校验未通过，回 Stage B 修订对应条目后重跑 `finalize`。
+
+## 旧模式（legacy generate，不推荐）
+
+```bash
+export ANTHROPIC_API_KEY="sk-ant-..."
+python -m src.main generate --input ... --output-dir ...
+```
+
+旧模式在 Python 子进程内自调 anthropic SDK 一条龙生成，需要独立 API key。仅为兼容保留。
 
 ## 学习链路（自进化）
 

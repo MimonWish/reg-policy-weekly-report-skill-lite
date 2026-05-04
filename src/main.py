@@ -11,7 +11,13 @@ from rich.console import Console
 
 from .extractor import extract_fact_sheets
 from .fetcher import fetch_articles
-from .generator import build_final_report_content, generate_drafts, retrieve_examples, rewrite_failed_items
+from .generator import (
+    build_final_report_content,
+    build_generation_prompt,
+    generate_drafts,
+    retrieve_examples,
+    rewrite_failed_items,
+)
 from .learning import diff_draft_vs_final, parse_final_report, update_few_shots, update_forbidden_expansions
 from .renderer import render_docx
 from .schemas import (
@@ -89,6 +95,11 @@ def main() -> None:
 @click.option("--input", "input_path", required=True, type=click.Path(exists=True), help="weekly_policies.json 路径")
 @click.option("--output-dir", "output_dir", default="./output", show_default=True, help="输出目录")
 def generate(input_path: str, output_dir: str) -> None:
+    """[legacy] 在 Python 子进程内自调 anthropic SDK 一条龙生成 docx。
+
+    需要 ANTHROPIC_API_KEY 环境变量。新项目推荐使用 prepare + finalize 模式。
+    """
+    console.print("[yellow]⚠ legacy 模式：建议使用 prepare + finalize 替代（无需 API key）。[/yellow]")
     out = Path(output_dir)
     out.mkdir(parents=True, exist_ok=True)
     logger = _RunLogger()
@@ -160,6 +171,108 @@ def generate(input_path: str, output_dir: str) -> None:
     console.print(f"[green]✓ docx → {docx_path}[/green]")
 
     _write_run_log(out, logger, input_data.report_date)
+
+
+@main.command()
+@click.option("--input", "input_path", required=True, type=click.Path(exists=True), help="weekly_policies.json 路径")
+@click.option("--output-dir", "output_dir", default="./output", show_default=True, help="输出目录")
+def prepare(input_path: str, output_dir: str) -> None:
+    """Skill-as-instructions 模式 Stage A：准备事实卡和提示词，由会话 LLM 接管生成。
+
+    本命令不调用任何 LLM API，仅做规则提取和数据汇总。
+    产物：fact_sheets / retrieved_examples / generation_prompt.md
+    """
+    out = Path(output_dir)
+    out.mkdir(parents=True, exist_ok=True)
+    logger = _RunLogger()
+
+    raw = Path(input_path).read_text(encoding="utf-8")
+    input_data = WeeklyPoliciesInput.model_validate_json(raw)
+    logger.info("input", f"读取输入，共 {len(input_data.policies)} 条")
+
+    console.rule("[bold]Stage A · Step 0: normalize[/bold]")
+    normalized = _normalize(input_data)
+    _save(out / "normalized_policies.json", normalized)
+    logger.info("normalize", f"过滤去重后保留 {len(normalized.policies)} 条")
+
+    console.rule("[bold]Stage A · Step 1: fetch[/bold]")
+    fetched = fetch_articles(normalized)
+    _save(out / "fetched_articles.json", fetched)
+    fallback_count = sum(1 for a in fetched.articles if a.title_only_fallback)
+    logger.info("fetch", f"抓取完成 {len(fetched.articles)} 条，title_only fallback={fallback_count}")
+
+    console.rule("[bold]Stage A · Step 2: extract（仅规则，不调 LLM）[/bold]")
+    fact_sheets = extract_fact_sheets(fetched, normalized, client=None)
+    _save(out / "policy_fact_sheets.json", fact_sheets)
+    logger.info("extract", f"事实卡构建完成 {len(fact_sheets.fact_sheets)} 条")
+
+    console.rule("[bold]Stage A · Step 3: retrieve few-shot[/bold]")
+    retrieved = retrieve_examples(fact_sheets)
+    _save(out / "retrieved_examples.json", retrieved)
+    logger.info("fewshot", "few-shot 检索完成")
+
+    console.rule("[bold]Stage A · Step 4: build generation prompt[/bold]")
+    prompt_text = build_generation_prompt(fact_sheets, retrieved)
+    prompt_path = out / "generation_prompt.md"
+    prompt_path.write_text(prompt_text, encoding="utf-8")
+    console.print(f"  [dim]saved → {prompt_path}[/dim]")
+    logger.info("prompt", f"生成提示词 {len(prompt_text)} 字符")
+
+    _write_run_log(out, logger, input_data.report_date)
+
+    console.print()
+    console.print("[bold green]Stage A 完成。[/bold green]")
+    console.print()
+    console.print("[bold]下一步（Stage B）：[/bold]")
+    console.print(f"  1. 让会话 LLM 读取 [cyan]{prompt_path}[/cyan]")
+    console.print(f"  2. LLM 按提示词产出 JSON，写入 [cyan]{out / 'policy_card_drafts.json'}[/cyan]")
+    console.print(f"  3. 运行 [cyan]python -m src.main finalize --output-dir {output_dir}[/cyan]")
+
+
+@main.command()
+@click.option("--output-dir", "output_dir", default="./output", show_default=True, help="包含 policy_card_drafts.json 的目录")
+def finalize(output_dir: str) -> None:
+    """Skill-as-instructions 模式 Stage C：校验 + 渲染 docx。
+
+    需要 Stage B 由会话 LLM 写好 policy_card_drafts.json 之后再运行。
+    """
+    out = Path(output_dir)
+    drafts_path = out / "policy_card_drafts.json"
+    fact_sheets_path = out / "policy_fact_sheets.json"
+    if not drafts_path.exists():
+        console.print(f"[red]错误：找不到 {drafts_path}[/red]")
+        console.print("  请先让会话 LLM 按 generation_prompt.md 产出 drafts JSON 后再运行 finalize。")
+        raise SystemExit(1)
+    if not fact_sheets_path.exists():
+        console.print(f"[red]错误：找不到 {fact_sheets_path}[/red]")
+        console.print("  请先运行 [cyan]python -m src.main prepare[/cyan]。")
+        raise SystemExit(1)
+
+    logger = _RunLogger()
+    drafts = PolicyCardDraftsOutput.model_validate_json(drafts_path.read_text(encoding="utf-8"))
+    fact_sheets = PolicyFactSheetsOutput.model_validate_json(fact_sheets_path.read_text(encoding="utf-8"))
+    logger.info("input", f"读取 drafts {len(drafts.items)} 条 + fact_sheets {len(fact_sheets.fact_sheets)} 条")
+
+    console.rule("[bold]Stage C · Step 5: validate[/bold]")
+    validation = validate_drafts(drafts, fact_sheets)
+    _save(out / "validation_report.json", validation)
+    logger.info("validate", validation.summary)
+    if not validation.passed:
+        console.print(f"[yellow][!] 校验未全通过：{validation.summary}[/yellow]")
+        console.print("  失败项已记录在 validation_report.json，请人工审阅或回 Stage B 重新生成对应条目。")
+
+    console.rule("[bold]Stage C · Step 6: finalize[/bold]")
+    final_content = build_final_report_content(drafts)
+    _save(out / "final_report_content.json", final_content)
+    logger.info("finalize", "已输出 final_report_content.json")
+
+    console.rule("[bold]Stage C · Step 7: render[/bold]")
+    docx_path = out / f"监管政策周报_{drafts.report_date}.docx"
+    render_docx(final_content, docx_path)
+    logger.info("render", f"Word 渲染完成：{docx_path.name}")
+    console.print(f"[green]✓ docx → {docx_path}[/green]")
+
+    _write_run_log(out, logger, drafts.report_date)
 
 
 @main.command("parse-final")

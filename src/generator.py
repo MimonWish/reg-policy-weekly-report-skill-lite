@@ -85,6 +85,84 @@ def retrieve_examples(
     )
 
 
+def build_generation_prompt(
+    fact_sheets_output: PolicyFactSheetsOutput,
+    retrieved_examples: RetrievedExamplesOutput | None = None,
+) -> str:
+    """组装一段完整的 Markdown 提示词，由调用方 LLM（如 Claude Code 会话）直接读取并产出 drafts。
+
+    本函数不调 anthropic SDK，仅做数据汇总。
+    """
+    if retrieved_examples is None:
+        retrieved_examples = retrieve_examples(fact_sheets_output)
+
+    prompts_cfg = _load_yaml("prompts")
+    business_rules = _load_yaml("business_rules")
+    style_rules = _load_yaml("style")
+    forbidden = _load_json(_FORBIDDEN_PATH).get("items", [])
+    system_prompt = prompts_cfg.get("weekly_report_generation_prompt", "").strip()
+
+    # 展平 few-shot
+    seen_ids: set[str] = set()
+    flat_examples: list[dict] = []
+    for examples in retrieved_examples.examples_by_policy_id.values():
+        for ex in examples:
+            if ex.example_id not in seen_ids:
+                seen_ids.add(ex.example_id)
+                flat_examples.append(ex.model_dump())
+
+    payload = {
+        "report_date": fact_sheets_output.report_date,
+        "report_type": "监管政策周报",
+        "fact_sheets": [fs.model_dump() for fs in fact_sheets_output.fact_sheets],
+        "few_shots": flat_examples[:8],
+        "business_rules": business_rules,
+        "style_rules": style_rules,
+        "forbidden_expansions": [f["pattern"] for f in forbidden[:20]],
+    }
+
+    parts: list[str] = []
+    parts.append("# 监管政策周报草稿生成任务")
+    parts.append("")
+    parts.append(f"**周报日期**：{fact_sheets_output.report_date}")
+    parts.append(f"**待生成条数**：{len(fact_sheets_output.fact_sheets)}")
+    parts.append("")
+    parts.append("## 系统指令（写作规则）")
+    parts.append("")
+    parts.append(system_prompt or "_(prompts.yaml 未配置 weekly_report_generation_prompt)_")
+    parts.append("")
+    parts.append("## 输入数据（fact_sheets + few-shot + 业务规则）")
+    parts.append("")
+    parts.append("```json")
+    parts.append(json.dumps(payload, ensure_ascii=False, indent=2))
+    parts.append("```")
+    parts.append("")
+    parts.append("## 输出要求")
+    parts.append("")
+    parts.append("严格输出以下 JSON 结构（不要 Markdown 代码块包裹，不要解释文字）：")
+    parts.append("")
+    parts.append("```json")
+    parts.append(json.dumps({
+        "report_date": fact_sheets_output.report_date,
+        "items": [
+            {
+                "policy_id": "<对应 fact_sheets 的 policy_id>",
+                "title": "<政策标题>",
+                "url": "<官网原文 URL>",
+                "paragraph1": "<P1 政策摘要：机构 / 文号 / 状态 / 关键阈值 / 时间要求>",
+                "paragraph2": "<P2 平安影响（重点文件才有）：受影响主体 + 1 个关键动作>",
+                "paragraph2_mode": "<direct | scene_direct_related | benchmark | opportunity | none>",
+                "importance": "<major | minor>",
+                "editor_notes": "<可选：留给人工编辑的备注>",
+            }
+        ],
+    }, ensure_ascii=False, indent=2))
+    parts.append("```")
+    parts.append("")
+    parts.append("将上述 JSON 直接写入 `policy_card_drafts.json`，然后运行 `python -m src.main finalize` 完成校验和 docx 渲染。")
+    return "\n".join(parts)
+
+
 def _build_generation_payload(
     fact_sheets: list[dict],
     retrieved: RetrievedExamplesOutput,
