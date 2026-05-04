@@ -77,6 +77,8 @@ def test_extract_and_compare_reports_emit_learning_proposals(tmp_path: Path) -> 
     registry_text = registry.read_text(encoding="utf-8")
     assert "auto_high_confidence" in registry_text
     assert "集团科技条线" in registry_text
+    assert "policy_family" in registry_text
+    assert "deactivation_condition" in registry_text
 
 
 def test_check_overfit_detects_reused_body_paragraph(tmp_path: Path) -> None:

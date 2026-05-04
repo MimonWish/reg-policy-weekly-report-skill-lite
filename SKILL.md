@@ -1,8 +1,7 @@
 ---
-name: reg-policy-weekly-report-skill-lite
+name: regulatory-policy-weekly
 description: >-
-  生成平安集团高管阅读口径的《监管政策周报》或《监管政策解读周报》Word 正式版。用户提到监管政策周报、监管周报、政策解读周报、平安政策周报，要求把某一周监管政策清单生成 DOCX，粘贴 YYYY-MM-DD｜发文机构｜政策标题 格式的政策行，提供 weekly_policies.json，或要求基于历史周报口径改进解读时，使用本 Skill。默认必须按 Skill instruction 由 Codex 直接完成政策检索、事实提炼、平安影响分析和终稿 JSON 编写；除最后将 final_report_content.json 渲染为 Word 外，不使用脚本生成正文、事实卡、草稿或影响判断。
-  用户上传业务专家最终版周报，要求做落差分析、自我进化、学习专家口径、优化 Skill 或沉淀历史经验时，也使用本 Skill；由 Skill instruction 直接触发自进化流程，用户不需要手动运行 Python 命令。高置信候选规则可自动升为 active，中低置信规则必须等待人工确认；不得把专家稿原句写入 few-shot 或正文模板。
+  生成平安集团监管政策解读周报 Word。用户提供 YYYY-MM-DD｜发文机构｜政策标题 清单、要求输出监管政策周报/政策解读/平安影响分析，或上传专家终稿要求落差分析、自我进化、优化周报口径时使用。正文生成必须 instruction-first；脚本仅用于 Word 渲染、DOCX 抽取、差异分析和反过拟合等确定性辅助。
 ---
 
 # 监管政策周报
@@ -19,7 +18,7 @@ description: >-
   ```
 
 - 可以使用 MCP、Web、文件读取、历史周报、配置文件和公开来源辅助判断，但写作决策必须由 Codex 按本 Skill instruction 完成。
-- 生成正式周报前，必须按 `docs/HISTORICAL_BUSINESS_REPORT_PATTERNS.md` 对齐业务历史终稿的段落颗粒度、平安主体颗粒度和加粗/红色高亮逻辑。
+- 生成正式周报前，必须按 `references/HISTORICAL_BUSINESS_REPORT_PATTERNS.md` 对齐业务历史终稿的段落颗粒度、平安主体颗粒度和加粗/红色高亮逻辑。
 - 生成正式周报和做专家稿对比前，必须读取 `config/evolution_rules.json` 中 `status=active` 的高置信自进化规则；这些规则只作为抽象判断约束，不提供可复用正文。
 - 历史周报只能作为“结构、判断颗粒度、高亮逻辑、专业公司映射方式”的参考，不能作为当前期正文来源。即使历史周报中已存在同一期或同一政策，也必须重新基于政策原文和本 Skill instruction 写作，不得复用历史周报成句。
 - 如果用户明确要求做开发回归测试，才可以使用脚本化 pipeline；正常业务出稿不得使用。
@@ -64,7 +63,7 @@ description: >-
    - 无论置信度如何，都不得沉淀专家稿长句或整段。
 
 5. 用户确认中低置信规则后再执行结构性更新。
-   - 确认后优先更新 `docs/HISTORICAL_BUSINESS_REPORT_PATTERNS.md`、`config/impact/professional_company_impact_rules.json`、`docs/QUALITY_CHECKLIST.md` 或 `SKILL.md`。
+   - 确认后优先更新 `references/HISTORICAL_BUSINESS_REPORT_PATTERNS.md`、`config/impact/professional_company_impact_rules.json`、`references/QUALITY_CHECKLIST.md` 或 `SKILL.md`。
    - 只有在用户明确要求旧式自动学习时，才可使用 `python -m src.main learn --apply-direct-examples`；默认不要使用。
 
 6. 更新后验证。
@@ -88,7 +87,7 @@ description: >-
    - 第二段必须按受影响专业公司或集团职能写，不写笼统“对平安有影响”。
    - 判断路径：监管对象 → 业务活动 → 平安主体/产品线/团队 → 业务链路 → 动作或影响程度。
    - 重大直接影响政策可采用“多主体并列”写法：每个主体一组业务链路和动作，用分号切分；不要强行压成一个泛化动作。
-   - 可参考 `config/impact/professional_company_impact_rules.json`、`config/impact/pingan_entities.json` 和 `docs/REFERENCE.md`，但不要让脚本替你判断。
+   - 可参考 `config/impact/professional_company_impact_rules.json`、`config/impact/pingan_entities.json` 和 `references/REFERENCE.md`，但不要让脚本替你判断。
 
 4. 写作成稿。
    - 直接编写 `final_report_content.json`，不要先生成脚本事实卡或脚本草稿。
@@ -185,7 +184,7 @@ python -m src.main render --input ./output/final_report_content.json --output-di
 - `scripts/check_overfit.py`：检查候选稿是否复用历史专家稿正文。
 - `config/evolution_rules.json`：自进化后自动激活的高置信抽象规则。生成周报和分析专家稿时都应读取 active 规则。
 - `config/impact/*.json`：可作为专业公司和场景判断参考。
-- `docs/HISTORICAL_BUSINESS_REPORT_PATTERNS.md`：业务历史终稿的结构、P2 写法和高亮规则。
-- `docs/SELF_EVOLUTION_WORKFLOW.md`：专家终稿上传后的自进化流程与输出契约。
-- `docs/REFERENCE.md`：需要更细口径时读取。
-- `docs/QUALITY_CHECKLIST.md`：最终 Word 自检清单。
+- `references/HISTORICAL_BUSINESS_REPORT_PATTERNS.md`：业务历史终稿的结构、P2 写法和高亮规则。
+- `references/SELF_EVOLUTION_WORKFLOW.md`：专家终稿上传后的自进化流程与输出契约。
+- `references/REFERENCE.md`：需要更细口径时读取。
+- `references/QUALITY_CHECKLIST.md`：最终 Word 自检清单。

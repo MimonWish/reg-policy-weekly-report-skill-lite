@@ -98,9 +98,9 @@ def main() -> None:
 def generate(input_path: str, output_dir: str) -> None:
     """[legacy] 在 Python 子进程内自调 anthropic SDK 一条龙生成 docx。
 
-    需要 ANTHROPIC_API_KEY 环境变量。新项目推荐使用 prepare + finalize 模式。
+    仅保留给开发回归；业务出稿必须按 SKILL.md instruction-first 编写 final_report_content.json 后只调用 render。
     """
-    console.print("[yellow]⚠ legacy 模式：建议使用 prepare + finalize 替代（无需 API key）。[/yellow]")
+    console.print("[yellow]⚠ legacy 模式：仅供开发回归。业务出稿请直接按 SKILL.md 写 final_report_content.json 后调用 render。[/yellow]")
     out = Path(output_dir)
     out.mkdir(parents=True, exist_ok=True)
     logger = _RunLogger()

@@ -205,7 +205,7 @@ def build_generation_prompt(
     }, ensure_ascii=False, indent=2))
     parts.append("```")
     parts.append("")
-    parts.append("将上述 JSON 直接写入 `policy_card_drafts.json`，然后运行 `python -m src.main finalize` 完成校验和 docx 渲染。")
+    parts.append("本提示仅用于旧回归链路；正式业务出稿应由 Codex 按 SKILL.md 直接编写 `final_report_content.json`，再仅调用 render。")
     return "\n".join(parts)
 
 

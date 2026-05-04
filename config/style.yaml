@@ -7,7 +7,7 @@ document_style:
     bold: true
     underline: false
     highlight: false
-    alignment: "center"
+    alignment: "left"
     size_hint: "large"
   body:
     font_color: "black"

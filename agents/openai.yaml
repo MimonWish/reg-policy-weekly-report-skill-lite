@@ -1,4 +1,4 @@
 interface:
   display_name: "监管政策周报"
   short_description: "按 Skill instruction 生成监管政策解读周报并渲染 Word"
-  default_prompt: "使用 $reg-policy-weekly-report-skill-lite 按 instruction-first 模式解读本周政策清单，写成监管政策周报，并仅在最后调用 render 生成 Word。"
+  default_prompt: "使用 $regulatory-policy-weekly 按 instruction-first 模式解读本周政策清单，写成监管政策周报，并仅在最后调用 render 生成 Word。"

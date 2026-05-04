@@ -4,7 +4,7 @@ import argparse
 import hashlib
 import json
 import re
-from datetime import datetime
+from datetime import datetime, timedelta
 from difflib import SequenceMatcher
 from pathlib import Path
 from typing import Any, Iterable
@@ -453,7 +453,58 @@ def _rule_key(proposal: dict[str, Any]) -> str:
     return hashlib.sha256(basis.encode("utf-8")).hexdigest()[:16]
 
 
-def _candidate_rule(proposal: dict[str, Any]) -> dict[str, Any]:
+def _rule_scope(learning_type: str) -> str:
+    return {
+        "selection_rule": "policy_selection_and_grouping",
+        "p2_mode_rule": "paragraph2_mode_boundary",
+        "impact_mapping": "professional_company_impact_mapping",
+        "highlight_rule": "red_black_highlight_logic",
+        "style_rule": "paragraph_granularity_and_tone",
+    }.get(learning_type, "general_weekly_report_instruction")
+
+
+def _infer_policy_family(trigger: str) -> str:
+    text = trigger or ""
+    keyword_map = [
+        ("金融产品网络营销", "financial_product_marketing"),
+        ("董事会秘书", "listed_company_governance"),
+        ("服务业", "service_sector_policy"),
+        ("期货", "securities_futures"),
+        ("证券", "securities_futures"),
+        ("基金", "asset_management"),
+        ("信托", "trust_business"),
+        ("数据出境", "data_cross_border"),
+        ("数据", "data_governance"),
+        ("慈善", "public_welfare"),
+        ("募捐", "public_welfare"),
+        ("动力电池", "green_recycling"),
+        ("科技创新", "technology_finance"),
+        ("设备更新", "technology_finance"),
+        ("社会救助", "social_governance"),
+        ("监狱法", "justice_administration"),
+    ]
+    for keyword, family in keyword_map:
+        if keyword in text:
+            return family
+    return "general_regulatory_policy"
+
+
+def _lifecycle_fields(proposal: dict[str, Any], source_reports: list[dict[str, str]] | None = None) -> dict[str, Any]:
+    today = datetime.now().date()
+    learning_type = proposal.get("learning_type", "")
+    return {
+        "scope": _rule_scope(learning_type),
+        "policy_family": _infer_policy_family(proposal.get("trigger", "")),
+        "evidence_count": 1,
+        "support_count": 1,
+        "source_reports": source_reports or [],
+        "review_after": (today + timedelta(days=90)).isoformat(),
+        "expires_at": (today + timedelta(days=365)).isoformat(),
+        "deactivation_condition": "若后续2次专家稿对同一scope和policy_family给出相反判断，降级为 pending_confirmation 并等待人工复核。",
+    }
+
+
+def _candidate_rule(proposal: dict[str, Any], source_reports: list[dict[str, str]] | None = None) -> dict[str, Any]:
     return {
         "rule_key": _rule_key(proposal),
         "learning_type": proposal.get("learning_type", ""),
@@ -466,6 +517,7 @@ def _candidate_rule(proposal: dict[str, Any]) -> dict[str, Any]:
         "confidence_score": proposal.get("confidence_score", 0.0),
         "status": proposal.get("status", "pending_confirmation"),
         "activation_reason": proposal.get("activation_reason", ""),
+        **_lifecycle_fields(proposal, source_reports),
     }
 
 
@@ -476,7 +528,11 @@ def compare_reports(system_path: Path | str, expert_path: Path | str, historical
     proposals: list[dict[str, str]] = []
     for row in item_rows:
         proposals.extend(_proposal_for_row(row))
-    candidate_rules = [_candidate_rule(proposal) for proposal in proposals]
+    source_reports = [
+        {"role": "system", "path": str(Path(system_path))},
+        {"role": "expert", "path": str(Path(expert_path))},
+    ]
+    candidate_rules = [_candidate_rule(proposal, source_reports) for proposal in proposals]
 
     aggregate = {
         "system_item_count": system["item_count"],
@@ -510,6 +566,27 @@ def compare_reports(system_path: Path | str, expert_path: Path | str, historical
     }
 
 
+def _merge_source_reports(existing_reports: list[Any], new_reports: list[Any]) -> list[Any]:
+    merged: list[Any] = []
+    seen: set[str] = set()
+    for report in [*existing_reports, *new_reports]:
+        if not isinstance(report, dict):
+            continue
+        key = f"{report.get('role', '')}|{report.get('path', '')}"
+        if key in seen:
+            continue
+        seen.add(key)
+        merged.append(report)
+    return merged
+
+
+def _safe_int(value: Any, default: int = 0) -> int:
+    try:
+        return int(value)
+    except Exception:
+        return default
+
+
 def update_active_rules_registry(candidate_rules: list[dict[str, Any]], registry_path: Path | str = DEFAULT_RULE_REGISTRY) -> dict[str, Any]:
     path = Path(registry_path)
     if path.exists():
@@ -539,6 +616,11 @@ def update_active_rules_registry(candidate_rules: list[dict[str, Any]], registry
             "updated_at": now,
         }
         if key in existing:
+            previous = existing[key]
+            entry["created_at"] = previous.get("created_at", now)
+            entry["support_count"] = _safe_int(previous.get("support_count")) + max(1, _safe_int(candidate.get("support_count"), 1))
+            entry["evidence_count"] = _safe_int(previous.get("evidence_count")) + max(1, _safe_int(candidate.get("evidence_count"), 1))
+            entry["source_reports"] = _merge_source_reports(previous.get("source_reports", []), candidate.get("source_reports", []))
             existing[key].update(entry)
             active_updated.append(key)
         else:
@@ -707,9 +789,9 @@ def render_learning_proposals_markdown(result: dict[str, Any]) -> str:
             "## 确认后建议落点",
             "",
             "- `SKILL.md`：只更新核心流程、边界和硬约束。",
-            "- `docs/HISTORICAL_BUSINESS_REPORT_PATTERNS.md`：沉淀可复用业务写法模式。",
+            "- `references/HISTORICAL_BUSINESS_REPORT_PATTERNS.md`：沉淀可复用业务写法模式。",
             "- `config/impact/professional_company_impact_rules.json`：沉淀专业公司与业务链路映射。",
-            "- `docs/QUALITY_CHECKLIST.md`：沉淀新增质检项。",
+            "- `references/QUALITY_CHECKLIST.md`：沉淀新增质检项。",
             "- 不直接写入专家稿原句。",
         ]
     )

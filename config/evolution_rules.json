@@ -1,5 +1,20 @@
 {
-  "version": "1.0",
+  "version": "1.1",
   "updated_at": "",
+  "schema": {
+    "purpose": "仅保存高置信、可复核、带生命周期的抽象规则；不得保存专家稿正文或长句。",
+    "auto_active_condition": "candidate.confidence == high 且 candidate.status == active",
+    "required_lifecycle_fields": [
+      "scope",
+      "policy_family",
+      "evidence_count",
+      "support_count",
+      "source_reports",
+      "review_after",
+      "expires_at",
+      "deactivation_condition"
+    ],
+    "pending_policy": "medium/low 候选规则只能保留在 candidate_rules.json 与 learning_proposals.md，等待人工确认。"
+  },
   "rules": []
 }
