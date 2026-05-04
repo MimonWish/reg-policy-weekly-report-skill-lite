@@ -133,6 +133,7 @@ def _append_paragraph_with_highlight(
 
 def _render_item(doc: Document, item: FinalReportItem, index: int) -> None:
     title_para = doc.add_heading(level=3)
+    title_para.alignment = WD_ALIGN_PARAGRAPH.LEFT
     title_para.paragraph_format.space_before = Pt(10)
     _add_run(title_para, f"{index}. {item.title}", bold=True, color=BLACK)
 
@@ -157,12 +158,12 @@ def _format_report_date(report_date: str) -> str:
 def render_docx(report: FinalReportContent, output_path: Path) -> Path:
     doc = Document()
     title = doc.add_heading(report.report_title, level=1)
-    title.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    title.alignment = WD_ALIGN_PARAGRAPH.LEFT
     for run in title.runs:
         run.font.color.rgb = BLACK
 
     date_para = doc.add_heading(_format_report_date(report.report_date), level=2)
-    date_para.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    date_para.alignment = WD_ALIGN_PARAGRAPH.LEFT
     date_para.paragraph_format.space_after = Pt(12)
     for run in date_para.runs:
         run.font.color.rgb = BLACK

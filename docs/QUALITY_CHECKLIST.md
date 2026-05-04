@@ -77,6 +77,15 @@
 - [ ] **J4** 任一 P1/P2 与历史同类段落高度近似时，已基于政策原文重新组织句式、要点顺序和业务动作表达
 - [ ] **J5** 红色/黑色高亮是根据本次新正文重新选择的精确子串，没有照搬历史高亮清单
 
+## K. 自进化
+
+- [ ] **K1** 对照专家终稿时，已先输出 `gap_analysis.md/json` 和 `learning_proposals.md`，未直接修改 Skill
+- [ ] **K2** 学习建议均为"触发条件 + 判断模式 + 适用边界"，不包含专家稿长句
+- [ ] **K3** 高置信候选规则已自动写入 `config/evolution_rules.json` 并标记为 `active`
+- [ ] **K4** 中低置信候选规则仍为 `pending_confirmation`，用户确认前没有更新 `SKILL.md`、`config/impact`、`few_shot_library.json` 或 `forbidden_expansion_library.json`
+- [ ] **K5** 确认后更新的规则能说明适用范围和过拟合风险
+- [ ] **K6** 更新后已重跑测试和反过拟合检查
+
 ---
 
 ## 不过时的快速回滚

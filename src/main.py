@@ -310,7 +310,12 @@ def parse_final(input_path: str, output_dir: str, report_date: str) -> None:
 @click.option("--final", "final_path", required=True, type=click.Path(exists=True), help="final_report_parsed.json")
 @click.option("--fact-sheets", "fact_sheets_path", required=False, type=click.Path(exists=True), default=None)
 @click.option("--output-dir", "output_dir", default="./output", show_default=True)
-def learn(draft_path: str, final_path: str, fact_sheets_path: str | None, output_dir: str) -> None:
+@click.option(
+    "--apply-direct-examples",
+    is_flag=True,
+    help="旧学习模式：把人工终稿段落直接写入 few-shot/forbidden 库。默认关闭，避免过拟合。",
+)
+def learn(draft_path: str, final_path: str, fact_sheets_path: str | None, output_dir: str, apply_direct_examples: bool) -> None:
     out = Path(output_dir)
     out.mkdir(parents=True, exist_ok=True)
     drafts = PolicyCardDraftsOutput.model_validate_json(Path(draft_path).read_text(encoding="utf-8"))
@@ -324,6 +329,20 @@ def learn(draft_path: str, final_path: str, fact_sheets_path: str | None, output
 
     diff = diff_draft_vs_final(drafts, final_parsed, fact_sheets)
     _save(out / "draft_final_diff.json", diff)
+
+    if not apply_direct_examples:
+        report = LearningUpdateReport(
+            report_date=drafts.report_date,
+            few_shot_added_count=0,
+            forbidden_expansion_added_count=0,
+            notes=[
+                "默认安全模式：仅输出 draft_final_diff.json，未自动更新 few-shot 或 forbidden expansion。",
+                "请优先使用 scripts/compare_reports.py 生成 gap_analysis 与 learning_proposals，并经用户确认后再更新 Skill。",
+            ],
+        )
+        _save(out / "learning_update_report.json", report)
+        console.print("[yellow]安全模式：未写入 few-shot/forbidden 库。使用 --apply-direct-examples 才会执行旧自动学习。[/yellow]")
+        return
 
     fs_added = update_few_shots(diff)
     fe_added = update_forbidden_expansions(diff)

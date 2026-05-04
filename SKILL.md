@@ -2,6 +2,7 @@
 name: reg-policy-weekly-report-skill-lite
 description: >-
   生成平安集团高管阅读口径的《监管政策周报》或《监管政策解读周报》Word 正式版。用户提到监管政策周报、监管周报、政策解读周报、平安政策周报，要求把某一周监管政策清单生成 DOCX，粘贴 YYYY-MM-DD｜发文机构｜政策标题 格式的政策行，提供 weekly_policies.json，或要求基于历史周报口径改进解读时，使用本 Skill。默认必须按 Skill instruction 由 Codex 直接完成政策检索、事实提炼、平安影响分析和终稿 JSON 编写；除最后将 final_report_content.json 渲染为 Word 外，不使用脚本生成正文、事实卡、草稿或影响判断。
+  用户上传业务专家最终版周报，要求做落差分析、自我进化、学习专家口径、优化 Skill 或沉淀历史经验时，也使用本 Skill；由 Skill instruction 直接触发自进化流程，用户不需要手动运行 Python 命令。高置信候选规则可自动升为 active，中低置信规则必须等待人工确认；不得把专家稿原句写入 few-shot 或正文模板。
 ---
 
 # 监管政策周报
@@ -19,6 +20,7 @@ description: >-
 
 - 可以使用 MCP、Web、文件读取、历史周报、配置文件和公开来源辅助判断，但写作决策必须由 Codex 按本 Skill instruction 完成。
 - 生成正式周报前，必须按 `docs/HISTORICAL_BUSINESS_REPORT_PATTERNS.md` 对齐业务历史终稿的段落颗粒度、平安主体颗粒度和加粗/红色高亮逻辑。
+- 生成正式周报和做专家稿对比前，必须读取 `config/evolution_rules.json` 中 `status=active` 的高置信自进化规则；这些规则只作为抽象判断约束，不提供可复用正文。
 - 历史周报只能作为“结构、判断颗粒度、高亮逻辑、专业公司映射方式”的参考，不能作为当前期正文来源。即使历史周报中已存在同一期或同一政策，也必须重新基于政策原文和本 Skill instruction 写作，不得复用历史周报成句。
 - 如果用户明确要求做开发回归测试，才可以使用脚本化 pipeline；正常业务出稿不得使用。
 
@@ -32,6 +34,43 @@ description: >-
 - 如果历史文件里已经包含用户本次要生成的期次或政策，必须把它标记为“禁复制样稿”：只抽取它的版式和判断维度，正文必须重新组织。
 - 法规名称、发文机构、日期、生效期、文号等不可改写的事实短语可以一致；除此以外，连续 20 个汉字以上的业务判断表达不应与历史周报相同。
 - 生成后要做相似度自检：任一 P1/P2 与历史周报同类段落高度近似时，保留事实，重写句式、信息组织和业务动作表达。
+
+## 受控自进化流程
+
+当用户上传业务专家最终版周报，要求基于系统生成稿做落差分析或自我进化时，按以下流程执行：
+
+1. 准备输入。
+   - 系统生成稿：本 Skill 生成的 Word 或对应 `final_report_content.json`。
+   - 专家终稿：用户上传的业务专家最终 Word。
+   - 历史样稿：可选，通常包括 `D:\Downloads\监管政策周报_合并完整版_最终版.docx` 及之后每周专家终稿。
+
+2. 由 Codex 按 Skill instruction 直接触发自进化分析。用户只需说明“对比系统稿和专家稿并自进化”，不要要求用户手动运行命令。Codex 可在内部使用 `src/evolution.py` 或 `scripts/compare_reports.py` 作为确定性辅助，但最终判断仍由 Skill instruction 完成。
+
+   产物保存到 `output_evolution_YYYYMMDD/`：
+   - `gap_analysis.json`：机器可读差异。
+   - `gap_analysis.md`：条目、P1/P2、主体、高亮和样式落差。
+   - `learning_proposals.md`：待确认的学习建议。
+   - `evolution_patch_plan.md`：确认后拟修改的文件范围。
+   - `candidate_rules.json`：候选规则及置信度。
+
+3. Codex 基于上述产物做业务解释。
+   - 解释专家稿相较系统稿真正强在哪里。
+   - 将差异抽象为“触发条件 + 判断模式 + 适用边界”。
+   - 不引用专家稿长句，不把专家稿直接变成 few-shot。
+
+4. 按置信度处理候选规则。
+   - `high`：自动写入 `config/evolution_rules.json`，状态为 `active`，下次生成周报时必须作为活跃规则参考。
+   - `medium` / `low`：保留在 `candidate_rules.json` 和 `learning_proposals.md`，状态为 `pending_confirmation`，等待用户确认。
+   - 无论置信度如何，都不得沉淀专家稿长句或整段。
+
+5. 用户确认中低置信规则后再执行结构性更新。
+   - 确认后优先更新 `docs/HISTORICAL_BUSINESS_REPORT_PATTERNS.md`、`config/impact/professional_company_impact_rules.json`、`docs/QUALITY_CHECKLIST.md` 或 `SKILL.md`。
+   - 只有在用户明确要求旧式自动学习时，才可使用 `python -m src.main learn --apply-direct-examples`；默认不要使用。
+
+6. 更新后验证。
+   - 重跑相关测试。
+   - 至少对一份历史系统稿做回归，检查是否改善 P2 主体和高亮逻辑。
+   - 对新稿运行反过拟合检查，确认未复用历史专家稿正文。
 
 ## 工作流程
 
@@ -140,7 +179,13 @@ python -m src.main render --input ./output/final_report_content.json --output-di
 - `src/main.py`：仅默认使用 `render` 命令生成 Word；其他命令只供开发回归或用户明确要求时使用。
 - `src/schemas.py`：可查看 `FinalReportContent` 结构。
 - `src/renderer.py`：Word 渲染器。
+- `src/evolution.py`：受控自进化的 Word 抽取、对比和反过拟合辅助逻辑。
+- `scripts/compare_reports.py`：生成专家稿与系统稿的落差分析和学习建议。
+- `scripts/extract_docx_style.py`：抽取 Word 段落、样式和高亮。
+- `scripts/check_overfit.py`：检查候选稿是否复用历史专家稿正文。
+- `config/evolution_rules.json`：自进化后自动激活的高置信抽象规则。生成周报和分析专家稿时都应读取 active 规则。
 - `config/impact/*.json`：可作为专业公司和场景判断参考。
 - `docs/HISTORICAL_BUSINESS_REPORT_PATTERNS.md`：业务历史终稿的结构、P2 写法和高亮规则。
+- `docs/SELF_EVOLUTION_WORKFLOW.md`：专家终稿上传后的自进化流程与输出契约。
 - `docs/REFERENCE.md`：需要更细口径时读取。
 - `docs/QUALITY_CHECKLIST.md`：最终 Word 自检清单。

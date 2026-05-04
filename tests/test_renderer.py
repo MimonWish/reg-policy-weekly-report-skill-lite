@@ -3,6 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 
 from docx import Document
+from docx.enum.text import WD_ALIGN_PARAGRAPH
 
 from src.renderer import render_docx
 from src.schemas import FinalReportContent, FinalReportItem
@@ -38,10 +39,15 @@ def test_render_docx_uses_business_heading_and_explicit_highlights(tmp_path: Pat
     doc = Document(str(output))
     paragraphs = [p for p in doc.paragraphs if p.text.strip()]
 
+    assert paragraphs[0].text == "监管政策周报"
+    assert "合并版" not in paragraphs[0].text
+    assert paragraphs[0].alignment == WD_ALIGN_PARAGRAPH.LEFT
     assert paragraphs[1].text == "#2026.04.26"
     assert paragraphs[1].style.name == "Heading 2"
+    assert paragraphs[1].alignment == WD_ALIGN_PARAGRAPH.LEFT
     assert paragraphs[2].text == "1. 中国人民银行等八部门《金融产品网络营销管理办法》"
     assert paragraphs[2].style.name == "Heading 3"
+    assert paragraphs[2].alignment == WD_ALIGN_PARAGRAPH.LEFT
 
     runs = [run for paragraph in paragraphs for run in paragraph.runs if run.text]
     assert any(run.text == "2026年9月30日" and run.bold and _run_color(run) == "FF0000" for run in runs)
